@@ -1,0 +1,4426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DeathFear — PRD v1.1</title>
+<style>
+  /* ── Reset & Base ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 16px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    color: #1a1a2e;
+    background: #f8f9fc;
+    line-height: 1.7;
+  }
+
+  /* ── Cover Page ── */
+  .cover {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 40%, #0f3460 70%, #1a1a2e 100%);
+    color: #fff;
+    padding: 4rem 2rem;
+    overflow: hidden;
+  }
+  .cover::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at 30% 50%, rgba(139, 92, 246, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 70% 50%, rgba(139, 92, 246, 0.05) 0%, transparent 50%);
+    animation: pulse 8s ease-in-out infinite alternate;
+  }
+  @keyframes pulse {
+    0% { transform: scale(1); opacity: 0.5; }
+    100% { transform: scale(1.1); opacity: 1; }
+  }
+  .cover-content { position: relative; z-index: 1; max-width: 800px; }
+  .cover-badge {
+    display: inline-block;
+    padding: 0.4rem 1.2rem;
+    border-radius: 100px;
+    background: rgba(139, 92, 246, 0.2);
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    color: #a78bfa;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+  }
+  .cover h1 {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, #c084fc, #8b5cf6, #6366f1);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .cover h2 {
+    font-size: clamp(1.1rem, 2vw, 1.5rem);
+    font-weight: 400;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 0.75rem;
+  }
+  .cover .subtitle {
+    font-size: 1rem;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 2rem;
+  }
+  .cover .tagline {
+    font-size: 1.15rem;
+    color: #a78bfa;
+    font-style: italic;
+    margin-top: 2rem;
+    padding: 1rem 2rem;
+    border-top: 1px solid rgba(139, 92, 246, 0.2);
+    display: inline-block;
+  }
+  .cover-meta {
+    position: absolute;
+    bottom: 3rem;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 0.85rem;
+    color: rgba(255,255,255,0.35);
+    z-index: 1;
+  }
+
+  /* ── Document Container ── */
+  .document {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 3rem 2rem 6rem;
+  }
+
+  /* ── Table of Contents ── */
+  .toc {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 3rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .toc h2 {
+    font-size: 1.25rem;
+    color: #1a1a2e;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #f3f4f6;
+  }
+  .toc-list { list-style: none; columns: 2; column-gap: 2rem; }
+  .toc-list li { break-inside: avoid; margin-bottom: 0.35rem; }
+  .toc-list a {
+    color: #6b7280;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.15s;
+    display: block;
+    padding: 0.2rem 0;
+  }
+  .toc-list a:hover { color: #8b5cf6; }
+
+  /* ── Headings ── */
+  .document h1 {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #1a1a2e;
+    margin: 3rem 0 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 3px solid #8b5cf6;
+  }
+  .document h1:first-of-type { margin-top: 0; }
+  .document h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 2.5rem 0 1rem;
+    padding-left: 0.75rem;
+    border-left: 3px solid #8b5cf6;
+  }
+  .document h3 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: #334155;
+    margin: 1.5rem 0 0.75rem;
+  }
+  .document h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #475569;
+    margin: 1rem 0 0.5rem;
+  }
+
+  /* ── Paragraphs & Text ── */
+  .document p { margin-bottom: 1rem; color: #374151; }
+  .document strong { color: #1a1a2e; font-weight: 600; }
+  .document em { color: #6b7280; }
+
+  /* ── Links ── */
+  .document a { color: #8b5cf6; text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 0.15s; }
+  .document a:hover { border-bottom-color: #8b5cf6; }
+
+  /* ── Lists ── */
+  .document ul, .document ol { margin-bottom: 1rem; padding-left: 1.5rem; color: #374151; }
+  .document li { margin-bottom: 0.35rem; }
+
+  /* ── Code ── */
+  .document code {
+    font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace;
+    font-size: 0.85em;
+    background: #f1f5f9;
+    padding: 0.15em 0.4em;
+    border-radius: 4px;
+    color: #7c3aed;
+  }
+  .document pre {
+    background: #1e293b;
+    color: #e2e8f0;
+    padding: 1.25rem;
+    border-radius: 10px;
+    overflow-x: auto;
+    margin: 1rem 0 1.5rem;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    border: 1px solid #334155;
+  }
+  .document pre code {
+    background: none;
+    padding: 0;
+    color: inherit;
+    font-size: inherit;
+    border-radius: 0;
+  }
+
+  /* ── Tables ── */
+  .document table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 1rem 0 1.5rem;
+    font-size: 0.9rem;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+  }
+  .document thead {
+    background: #f8f9fc;
+  }
+  .document th {
+    text-align: left;
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+    color: #1e293b;
+    border-bottom: 2px solid #e5e7eb;
+    background: #f1f5f9;
+  }
+  .document td {
+    padding: 0.65rem 1rem;
+    border-bottom: 1px solid #f1f5f9;
+    color: #374151;
+    vertical-align: top;
+  }
+  .document tr:last-child td { border-bottom: none; }
+  .document tbody tr:hover { background: #f8fafc; }
+
+  /* ── Blockquotes ── */
+  .document blockquote {
+    border-left: 4px solid #8b5cf6;
+    padding: 0.75rem 1.25rem;
+    margin: 1rem 0;
+    background: #f8fafc;
+    border-radius: 0 8px 8px 0;
+    color: #475569;
+  }
+
+  /* ── Horizontal Rules ── */
+  .document hr {
+    border: none;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #e5e7eb, transparent);
+    margin: 2.5rem 0;
+  }
+
+  /* ── Section Numbering ── */
+  .document h1 { counter-reset: h2; }
+  .document h2 { counter-reset: h3; }
+  .document h2::before {
+    content: counter(h2) ". ";
+    counter-increment: h2;
+  }
+  .document h3::before {
+    content: counter(h2) "." counter(h3) " ";
+    counter-increment: h3;
+  }
+
+  /* ── Badges within tables ── */
+  .badge {
+    display: inline-block;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  .badge-green { background: #dcfce7; color: #166534; }
+  .badge-red { background: #fee2e2; color: #991b1b; }
+  .badge-blue { background: #dbeafe; color: #1e40af; }
+  .badge-amber { background: #fef3c7; color: #92400e; }
+
+  /* ── Page Breaks (for print/PDF) ── */
+  @media print {
+    body { background: #fff; }
+    .cover { min-height: 100vh; page-break-after: always; }
+    .document { max-width: 100%; padding: 0; }
+    .document h1, .document h2 { page-break-before: always; }
+    .document h1:first-of-type { page-break-before: avoid; }
+    .document table { page-break-inside: avoid; }
+    .document pre { page-break-inside: avoid; }
+    .document h3, .document h4 { page-break-after: avoid; }
+    .toc { page-break-after: always; }
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 768px) {
+    .document { padding: 1.5rem 1rem; }
+    .document h1 { font-size: 1.6rem; }
+    .document h2 { font-size: 1.2rem; }
+    .toc-list { columns: 1; }
+    .cover { padding: 3rem 1.5rem; }
+  }
+
+  /* ── Dark Mode (if user prefers) ── */
+  @media (prefers-color-scheme: dark) {
+    body:not(:has(.cover)) { background: #0f172a; }
+    .document { color: #e2e8f0; }
+    .document h1, .document h2, .document h3, .document h4 { color: #f1f5f9; }
+    .document p, .document li, .document td { color: #cbd5e1; }
+    .document strong { color: #f1f5f9; }
+    .document table { border-color: #334155; }
+    .document thead { background: #1e293b; }
+    .document th { background: #1e293b; color: #e2e8f0; border-bottom-color: #334155; }
+    .document td { border-bottom-color: #1e293b; }
+    .document tbody tr:hover { background: #1a2332; }
+    .document code { background: #1e293b; color: #a78bfa; }
+    .document blockquote { background: #1e293b; color: #94a3b8; }
+    .toc { background: #1e293b; border-color: #334155; }
+    .toc h2 { color: #f1f5f9; border-bottom-color: #334155; }
+    .toc-list a { color: #94a3b8; }
+    .document hr { background: linear-gradient(90deg, transparent, #334155, transparent); }
+  }
+</style>
+</head>
+<body>
+
+<!-- Cover Page -->
+<section class="cover">
+  <div class="cover-content">
+    <div class="cover-badge">Product Requirements Document — v1.1</div>
+    <h1>DEATHFEAR</h1>
+    <h2>Freelance Payment Recovery Platform</h2>
+    <p class="subtitle">Full Production Build Specification</p>
+    <div class="tagline">"Never chase a payment again. DeathFear handles the conversations, you handle the work."</div>
+  </div>
+  <div class="cover-meta">
+    <span>2,500+ Lines &bull; 15 Sections &bull; Build-Ready for AI Agents</span>
+  </div>
+</section>
+
+<!-- Document Body -->
+<div class="document">
+
+<!-- Auto-generated TOC will be inserted via JS -->
+<div id="toc-container"></div>
+
+<h1>DEATHFEAR — Freelance Payment Recovery SaaS</h1>
+<h2>Product Requirements Document (PRD)</h2>
+<h3>Version 1.1 — Full Production Build</h3>
+<hr>
+<h1>1. EXECUTIVE SUMMARY</h1>
+<p><strong>DeathFear</strong> is a subscription-based SaaS platform that helps freelancers recover unpaid invoices from clients. It automates the awkward, time-consuming process of payment follow-up — from friendly reminders to legal escalation — all in the freelancer&#39;s authentic voice.</p>
+<p><strong>Tagline:</strong> <em>&quot;Never chase a payment again. DeathFear handles the conversations, you handle the work.&quot;</em></p>
+<p><strong>Business Model:</strong> Subscription (Free + Premium tiers), Monthly &amp; Annual billing</p>
+<p><strong>Brand Identity Note:</strong> The name &quot;DeathFear&quot; reflects the dread of unpaid invoices that haunts every freelancer. The visual identity contrasts this edgy name with a clean, professional, trustworthy interface — purple primary (#8B5CF6) conveys confidence without aggression. Copy tone is empathetic and empowering, not threatening. The goal is to make the freelancer feel supported, not aggressive.</p>
+<hr>
+<h1>2. PROBLEM &amp; SOLUTION</h1>
+<h2>2.1 Problem Statement</h2>
+<p>Freelancers — designers, developers, copywriters, consultants — are routinely owed money by clients who simply don&#39;t pay on time. The average freelancer has 2–4 unpaid invoices at any moment. Chasing payment feels awkward and kills client relationships. No tool does this end-to-end: send the invoice → auto-remind at 7, 14, 30 days → escalate to a formal notice letter → generate a small claims filing guide — all in the freelancer&#39;s voice, not a robot&#39;s.</p>
+<h2>2.2 Solution</h2>
+<p>A web-based platform (desktop-first, responsive) that provides:</p>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Invoice Creation &amp; Tracking</td>
+<td>Create, send, and track invoices</td>
+</tr>
+<tr>
+<td>Automated Reminder Engine</td>
+<td>Multi-touch sequences with escalating tones</td>
+</tr>
+<tr>
+<td>AI Tone Adaptation</td>
+<td>Reminders written in the freelancer&#39;s voice using LLM</td>
+</tr>
+<tr>
+<td>Client Payment Dashboard</td>
+<td>At-a-glance view of who paid and who hasn&#39;t</td>
+</tr>
+<tr>
+<td>Legal Escalation</td>
+<td>Generate formal notice letters and small claims guides</td>
+</tr>
+<tr>
+<td>Subscription Management</td>
+<td>Free &amp; Premium tiers with Stripe/PayPal/UPI billing</td>
+</tr>
+<tr>
+<td>Client Invoice Portal</td>
+<td>Secure, tokenized page where clients view invoices and pay online</td>
+</tr>
+</tbody></table>
+<hr>
+<h1>3. TARGET AUDIENCE</h1>
+<table>
+<thead>
+<tr>
+<th>Persona</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>The Solo Freelancer</strong></td>
+<td>Independent designer, developer, writer — 1-5 active clients, limited legal knowledge</td>
+</tr>
+<tr>
+<td><strong>The Agency Owner</strong></td>
+<td>Runs a small agency (2-10 people), needs to chase payments for team</td>
+</tr>
+<tr>
+<td><strong>The Consultant</strong></td>
+<td>High-value project-based work, professional reputation matters</td>
+</tr>
+</tbody></table>
+<p><strong>Key Demographics:</strong></p>
+<ul>
+<li>Age: 25–45</li>
+<li>Tech-savviness: Moderate to High</li>
+<li>Pain point: Highly uncomfortable with financial confrontation</li>
+<li>Geography: Global (English-language focused initially, USD-only for v1)</li>
+</ul>
+<hr>
+<h1>4. TECH STACK SPECIFICATION</h1>
+<h2>4.1 Frontend</h2>
+<table>
+<thead>
+<tr>
+<th>Technology</th>
+<th>Version</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Next.js</td>
+<td>14.2.x (App Router)</td>
+<td>React framework with SSR/SSG</td>
+</tr>
+<tr>
+<td>TypeScript</td>
+<td>5.x</td>
+<td>Type safety</td>
+</tr>
+<tr>
+<td>Tailwind CSS</td>
+<td>3.4.x</td>
+<td>Utility-first styling</td>
+</tr>
+<tr>
+<td>shadcn/ui</td>
+<td>Latest</td>
+<td>Component library (Radix primitives)</td>
+</tr>
+<tr>
+<td>React Hook Form</td>
+<td>Latest</td>
+<td>Form handling</td>
+</tr>
+<tr>
+<td>Zod</td>
+<td>3.23.x</td>
+<td>Schema validation</td>
+</tr>
+<tr>
+<td>TanStack Query</td>
+<td>5.50.x</td>
+<td>Server state management</td>
+</tr>
+<tr>
+<td>date-fns</td>
+<td>3.6.x</td>
+<td>Date utilities</td>
+</tr>
+<tr>
+<td>lucide-react</td>
+<td>0.400.x</td>
+<td>Icons</td>
+</tr>
+<tr>
+<td>recharts</td>
+<td>2.12.0 (exact)</td>
+<td>Charts (pinned to avoid API breaks)</td>
+</tr>
+<tr>
+<td>react-day-picker</td>
+<td>Latest</td>
+<td>Date picker (used via shadcn&#39;s Calendar+Popover pattern)</td>
+</tr>
+</tbody></table>
+<p><strong>shadcn/ui Init Configuration:</strong></p>
+<pre><code class="language-bash">npx shadcn@latest init
+# Style: New York
+# Base color: Zinc
+# CSS variables: Yes
+# React Server Components: Yes
+# Import alias: @/
+</code></pre>
+<p><strong>Server vs Client Components Strategy:</strong></p>
+<ul>
+<li><strong>Server Components (default):</strong> Landing page, invoice list (initial fetch), settings pages (read), client detail (read), admin pages</li>
+<li><strong>Client Components (where interactivity is needed):</strong> Dashboard (charts), invoice form, client form, reminder editor, subscription UI, settings forms, client portal</li>
+<li><strong>Pattern:</strong> Pages are Server Components that wrap interactive islands as Client Components. TanStack Query providers at the app layout level.</li>
+</ul>
+<h2>4.2 Backend</h2>
+<table>
+<thead>
+<tr>
+<th>Technology</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Next.js API Routes</td>
+<td>API endpoints (App Router route handlers)</td>
+</tr>
+<tr>
+<td>Prisma ORM</td>
+<td>Database ORM and migrations</td>
+</tr>
+<tr>
+<td>PostgreSQL 15+</td>
+<td>Primary database</td>
+</tr>
+<tr>
+<td>NextAuth.js (Auth.js) v5</td>
+<td>Authentication — <strong>JWT strategy</strong> (no DB sessions, simpler for serverless)</td>
+</tr>
+<tr>
+<td>Resend</td>
+<td>Email delivery for reminders and notifications</td>
+</tr>
+<tr>
+<td>OpenAI API</td>
+<td>AI-powered tone adjustment for reminder messages</td>
+</tr>
+<tr>
+<td>Stripe API</td>
+<td>Payment processing for subscriptions + credit cards</td>
+</tr>
+<tr>
+<td>PayPal REST API</td>
+<td>Payment processing for subscriptions</td>
+</tr>
+<tr>
+<td>Razorpay API</td>
+<td>UPI AutoPay (eMandate) for recurring subscription payments</td>
+</tr>
+<tr>
+<td>Vercel Blob</td>
+<td>File storage for avatar, logo, and invoice PDF uploads</td>
+</tr>
+</tbody></table>
+<p><strong>Auth Session Strategy:</strong> JWT (database <code>sessions</code> table not used). PrismaAdapter still required for OAuth account/providers linking.</p>
+<p><strong>Timezone Handling:</strong> All dates stored in UTC. Display converted to user&#39;s local timezone via browser <code>Intl.DateTimeFormat</code>. The daily reminder cron at 08:00 UTC covers most global timezones during waking hours. <code>nextReminderDate</code> comparisons use <code>CURRENT_DATE</code> in UTC (database timezone). No per-user timezone setting in v1.</p>
+<h2>4.3 Infrastructure</h2>
+<table>
+<thead>
+<tr>
+<th>Service</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Vercel</td>
+<td>Hosting (Next.js optimized) — <strong>Vercel Pro tier required</strong> (100MB serverless limit accommodates PDF generation)</td>
+</tr>
+<tr>
+<td>Vercel Blob</td>
+<td>File storage for avatars, logos, PDF exports</td>
+</tr>
+<tr>
+<td>Vercel KV / Upstash</td>
+<td>Rate limiting + caching</td>
+</tr>
+<tr>
+<td>Neon / Supabase</td>
+<td>Managed PostgreSQL</td>
+</tr>
+<tr>
+<td>Resend</td>
+<td>Transactional email (requires domain verification: configure SPF + DKIM for <code>deathear.app</code> in Resend dashboard). Run <code>npx react-email dev</code> in development to preview email templates locally</td>
+</tr>
+<tr>
+<td>Stripe</td>
+<td>Subscription billing</td>
+</tr>
+<tr>
+<td>GitHub</td>
+<td>Source control + CI/CD</td>
+</tr>
+<tr>
+<td>Inngest</td>
+<td>Cron jobs + background queues + dead letter queue</td>
+</tr>
+</tbody></table>
+<p><strong>Inngest Serve Endpoint:</strong> <code>/api/inngest</code> (must be added to API route list). Run <code>npx inngest-cli dev</code> locally for development.</p>
+<hr>
+<h1>5. DATABASE SCHEMA</h1>
+<h2>5.1 Entity Relationship Diagram (Text)</h2>
+<pre><code>User ──has──&gt; Account (OAuth accounts)
+User ──has──&gt; Session (Auth sessions)
+User ──has──&gt; Subscription
+User ──has──&gt; many Client
+User ──has──&gt; many Invoice
+User ──has──&gt; many ToneSample (AI voice samples)
+User ──has──&gt; many NotificationLog
+User ──belongs_to──&gt; SubscriptionPlan
+
+Client ──has──&gt; many Invoice
+Invoice ──has──&gt; one InvoiceShare (tokenized client access)
+Invoice ──has──&gt; many Reminder
+Invoice ──has──&gt; one LegalEscalation
+
+Reminder (belongs_to Invoice)
+LegalEscalation (belongs_to Invoice)
+InvoiceShare (belongs_to Invoice, unique token)
+</code></pre>
+<h2>5.2 Tables</h2>
+<h3>users</h3>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Constraints</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>id</td>
+<td>UUID</td>
+<td>PK, default uuid_generate_v4()</td>
+<td></td>
+</tr>
+<tr>
+<td>email</td>
+<td>VARCHAR(255)</td>
+<td>UNIQUE, NOT NULL</td>
+<td></td>
+</tr>
+<tr>
+<td>emailVerified</td>
+<td>TIMESTAMP</td>
+<td>nullable</td>
+<td></td>
+</tr>
+<tr>
+<td>name</td>
+<td>VARCHAR(255)</td>
+<td>nullable</td>
+<td>Display name</td>
+</tr>
+<tr>
+<td>image</td>
+<td>TEXT</td>
+<td>nullable</td>
+<td>Avatar URL</td>
+</tr>
+<tr>
+<td>hashedPassword</td>
+<td>VARCHAR(255)</td>
+<td>nullable</td>
+<td>null for OAuth-only accounts</td>
+</tr>
+<tr>
+<td>role</td>
+<td>VARCHAR(50)</td>
+<td>NOT NULL, default &#39;user&#39;</td>
+<td>&quot;user&quot; or &quot;admin&quot;</td>
+</tr>
+<tr>
+<td>stripeCustomerId</td>
+<td>VARCHAR(255)</td>
+<td>UNIQUE, nullable</td>
+<td>Stripe customer reference</td>
+</tr>
+<tr>
+<td>paymentLink</td>
+<td>TEXT</td>
+<td>nullable</td>
+<td>Freelancer&#39;s preferred payment link (PayPal.me, Stripe payment link, etc.)</td>
+</tr>
+<tr>
+<td>darkMode</td>
+<td>VARCHAR(20)</td>
+<td>NOT NULL, default &#39;system&#39;</td>
+<td>&quot;light&quot;, &quot;dark&quot;, &quot;system&quot;</td>
+</tr>
+<tr>
+<td>deletedAt</td>
+<td>TIMESTAMP</td>
+<td>nullable</td>
+<td>Soft delete: if set, user is considered deleted</td>
+</tr>
+<tr>
+<td>createdAt</td>
+<td>TIMESTAMP</td>
+<td>NOT NULL, default NOW()</td>
+<td></td>
+</tr>
+<tr>
+<td>updatedAt</td>
+<td>TIMESTAMP</td>
+<td>NOT NULL, default NOW()</td>
+<td></td>
+</tr>
+</tbody></table>
+<p><strong>Indexes:</strong> <code>role</code>, <code>email</code></p>
+<h3>accounts (NextAuth.js)</h3>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Constraints</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>id</td>
+<td>UUID</td>
+<td>PK</td>
+<td></td>
+</tr>
+<tr>
+<td>userId</td>
+<td>UUID</td>
+<td>FK → users.id, NOT NULL</td>
+<td></td>
+</tr>
+<tr>
+<td>type</td>
+<td>VARCHAR(255)</td>
+<td>NOT NULL</td>
+<td>&quot;oauth&quot; or &quot;credentials&quot;</td>
+</tr>
+<tr>
+<td>provider</td>
+<td>VARCHAR(255)</td>
+<td>NOT NULL</td>
+<td>&quot;google&quot;, &quot;github&quot;, etc.</td>
+</tr>
+<tr>
+<td>providerAccountId</td>
+<td>VARCHAR(255)</td>
+<td>NOT NULL</td>
+<td></td>
+</tr>
+<tr>
+<td>refresh_token</td>
+<td>TEXT</td>
+<td>nullable</td>
+<td></td>
+</tr>
+<tr>
+<td>access_token</td>
+<td>TEXT</td>
+<td>nullable</td>
+<td></td>
+</tr>
+<tr>
+<td>expires_at</td>
+<td>INTEGER</td>
+<td>nullable</td>
+<td></td>
+</tr>
+<tr>
+<td>token_type</td>
+<td>VARCHAR(255)</td>
+<td>nullable</td>
+<td></td>
+</tr>
+<tr>
+<td>scope</td>
+<td>VARCHAR(255)</td>
+<td>nullable</td>
+<td></td>
+</tr>
+<tr>
+<td>id_token</td>
+<td>TEXT</td>
+<td>nullable</td>
+<td></td>
+</tr>
+<tr>
+<td>session_state</td>
+<td>VARCHAR(255)</td>
+<td>nullable</td>
+<td></td>
+</tr>
+<tr>
+<td>UNIQUE(provider, providerAccountId)</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<p><strong>Indexes:</strong> <code>userId</code></p>
+<h3>sessions (NextAuth.js)</h3>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Constraints</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>id</td>
+<td>UUID</td>
+<td>PK</td>
+<td></td>
+</tr>
+<tr>
+<td>sessionToken</td>
+<td>VARCHAR(255)</td>
+<td>UNIQUE, NOT NULL</td>
+<td></td>
+</tr>
+<tr>
+<td>userId</td>
+<td>UUID</td>
+<td>FK → users.id, NOT NULL</td>
+<td></td>
+</tr>
+<tr>
+<td>expires</td>
+<td>TIMESTAMP</td>
+<td>NOT NULL</td>
+<td></td>
+</tr>
+</tbody></table>
+<p><strong>Indexes:</strong> <code>userId</code>, <code>sessionToken</code></p>
+<h3>verification_tokens (NextAuth.js)</h3>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Constraints</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>identifier</td>
+<td>VARCHAR(255)</td>
+<td>NOT NULL</td>
+<td></td>
+</tr>
+<tr>
+<td>token</td>
+<td>VARCHAR(255)</td>
+<td>UNIQUE, NOT NULL</td>
+<td></td>
+</tr>
+<tr>
+<td>expires</td>
+<td>TIMESTAMP</td>
+<td>NOT NULL</td>
+<td></td>
+</tr>
+<tr>
+<td>UNIQUE(identifier, token)</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<h3>subscription_plans</h3>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Constraints</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>id</td>
+<td>UUID</td>
+<td>PK</td>
+<td></td>
+</tr>
+<tr>
+<td>name</td>
+<td>VARCHAR(100)</td>
+<td>NOT NULL</td>
+<td>&quot;Free&quot;, &quot;Premium&quot;</td>
+</tr>
+<tr>
+<td>slug</td>
+<td>VARCHAR(50)</td>
+<td>UNIQUE, NOT NULL</td>
+<td>&quot;free&quot;, &quot;premium&quot;</td>
+</tr>
+<tr>
+<td>description</td>
+<td>TEXT</td>
+<td>nullable</td>
+<td></td>
+</tr>
+<tr>
+<td>priceMonthly</td>
+<td>DECIMAL(10,2)</td>
+<td>NOT NULL</td>
+<td>Price in USD (0 for free)</td>
+</tr>
+<tr>
+<td>priceAnnual</td>
+<td>DECIMAL(10,2)</td>
+<td>NOT NULL</td>
+<td>Price in USD (0 for free)</td>
+</tr>
+<tr>
+<td>stripePriceIdMonthly</td>
+<td>VARCHAR(255)</td>
+<td>nullable</td>
+<td>Stripe price ID for monthly</td>
+</tr>
+<tr>
+<td>stripePriceIdAnnual</td>
+<td>VARCHAR(255)</td>
+<td>nullable</td>
+<td>Stripe price ID for annual</td>
+</tr>
+<tr>
+<td>paypalPlanIdMonthly</td>
+<td>VARCHAR(255)</td>
+<td>nullable</td>
+<td>PayPal plan ID for monthly</td>
+</tr>
+<tr>
+<td>paypalPlanIdAnnual</td>
+<td>VARCHAR(255)</td>
+<td>nullable</td>
+<td>PayPal plan ID for annual</td>
+</tr>
+<tr>
+<td>razorpayPlanId</td>
+<td>VARCHAR(255)</td>
+<td>nullable</td>
+<td>Razorpay plan ID for UPI AutoPay</td>
+</tr>
+<tr>
+<td>invoicesPerMonth</td>
+<td>INTEGER</td>
+<td>NOT NULL</td>
+<td>Max invoices allowed per month (0 = unlimited)</td>
+</tr>
+<tr>
+<td>clientsAllowed</td>
+<td>INTEGER</td>
+<td>NOT NULL</td>
+<td>Max clients (0 = unlimited)</td>
+</tr>
+<tr>
+<td>aiToneEnabled</td>
+<td>BOOLEAN</td>
+<td>NOT NULL, default false</td>
+<td>AI tone adjustment</td>
+</tr>
+<tr>
+<td>legalEscalationEnabled</td>
+<td>BOOLEAN</td>
+<td>NOT NULL, default false</td>
+<td>Legal letter generation</td>
+</tr>
+<tr>
+<td>prioritySupport</td>
+<td>BOOLEAN</td>
+<td>NOT NULL, default false</td>
+<td></td>
+</tr>
+<tr>
+<td>features</td>
+<td>JSONB</td>
+<td>NOT NULL, default &#39;[]&#39;</td>
+<td>Array of feature strings</td>
+</tr>
+<tr>
+<td>isActive</td>
+<td>BOOLEAN</td>
+<td>NOT NULL, default true</td>
+<td></td>
+</tr>
+<tr>
+<td>sortOrder</td>
+<td>INTEGER</td>
+<td>NOT NULL, default 0</td>
+<td>Display ordering</td>
+</tr>
+<tr>
+<td>createdAt</td>
+<td>TIMESTAMP</td>
+<td>NOT NULL, default NOW()</td>
+<td></td>
+</tr>
+</tbody></table>
+<h3>subscriptions</h3>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Constraints</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>id</td>
+<td>UUID</td>
+<td>PK</td>
+<td></td>
+</tr>
+<tr>
+<td>userId</td>
+<td>UUID</td>
+<td>FK → users.id, UNIQUE, NOT NULL</td>
+<td>One subscription per user</td>
+</tr>
+<tr>
+<td>planId</td>
+<td>UUID</td>
+<td>FK → subscription_plans, NOT NULL</td>
+<td>Current plan</td>
+</tr>
+<tr>
+<td>status</td>
+<td>VARCHAR(50)</td>
+<td>NOT NULL</td>
+<td>&quot;active&quot;, &quot;canceled&quot;, &quot;past_due&quot;, &quot;trialing&quot;, &quot;incomplete&quot;, &quot;incomplete_expired&quot;</td>
+</tr>
+<tr>
+<td>billingInterval</td>
+<td>VARCHAR(20)</td>
+<td>NOT NULL</td>
+<td>&quot;monthly&quot; or &quot;annual&quot;</td>
+</tr>
+<tr>
+<td>paymentProvider</td>
+<td>VARCHAR(20)</td>
+<td>NOT NULL</td>
+<td>&quot;stripe&quot;, &quot;paypal&quot;, &quot;razorpay&quot;</td>
+</tr>
+<tr>
+<td>stripeSubscriptionId</td>
+<td>VARCHAR(255)</td>
+<td>UNIQUE, nullable</td>
+<td>Stripe subscription reference</td>
+</tr>
+<tr>
+<td>paypalSubscriptionId</td>
+<td>VARCHAR(255)</td>
+<td>UNIQUE, nullable</td>
+<td>PayPal subscription reference</td>
+</tr>
+<tr>
+<td>razorpaySubscriptionId</td>
+<td>VARCHAR(255)</td>
+<td>UNIQUE, nullable</td>
+<td>Razorpay UPI AutoPay reference</td>
+</tr>
+<tr>
+<td>currentPeriodStart</td>
+<td>TIMESTAMP</td>
+<td>NOT NULL</td>
+<td></td>
+</tr>
+<tr>
+<td>currentPeriodEnd</td>
+<td>TIMESTAMP</td>
+<td>NOT NULL</td>
+<td></td>
+</tr>
+<tr>
+<td>canceledAt</td>
+<td>TIMESTAMP</td>
+<td>nullable</td>
+<td></td>
+</tr>
+<tr>
+<td>invoicesUsedThisMonth</td>
+<td>INTEGER</td>
+<td>NOT NULL, default 0</td>
+<td></td>
+</tr>
+<tr>
+<td>lastInvoiceResetAt</td>
+<td>TIMESTAMP</td>
+<td>NOT NULL, default NOW()</td>
+<td></td>
+</tr>
+<tr>
+<td>createdAt</td>
+<td>TIMESTAMP</td>
+<td>NOT NULL, default NOW()</td>
+<td></td>
+</tr>
+<tr>
+<td>updatedAt</td>
+<td>TIMESTAMP</td>
+<td>NOT NULL, default NOW()</td>
+<td></td>
+</tr>
+</tbody></table>
+<p><strong>Indexes:</strong> <code>userId</code>, <code>stripeSubscriptionId</code>, <code>paypalSubscriptionId</code>, <code>razorpaySubscriptionId</code>, <code>status</code></p>
+<h3>clients</h3>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Constraints</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>id</td>
+<td>UUID</td>
+<td>PK</td>
+<td></td>
+</tr>
+<tr>
+<td>userId</td>
+<td>UUID</td>
+<td>FK → users.id, NOT NULL</td>
+<td>Owner freelancer</td>
+</tr>
+<tr>
+<td>name</td>
+<td>VARCHAR(255)</td>
+<td>NOT NULL</td>
+<td></td>
+</tr>
+<tr>
+<td>email</td>
+<td>VARCHAR(255)</td>
+<td>NOT NULL</td>
+<td></td>
+</tr>
+<tr>
+<td>company</td>
+<td>VARCHAR(255)</td>
+<td>nullable</td>
+<td></td>
+</tr>
+<tr>
+<td>phone</td>
+<td>VARCHAR(50)</td>
+<td>nullable</td>
+<td></td>
+</tr>
+<tr>
+<td>notes</td>
+<td>TEXT</td>
+<td>nullable</td>
+<td></td>
+</tr>
+<tr>
+<td>totalInvoiced</td>
+<td>DECIMAL(12,2)</td>
+<td>NOT NULL, default 0</td>
+<td>Running total</td>
+</tr>
+<tr>
+<td>totalPaid</td>
+<td>DECIMAL(12,2)</td>
+<td>NOT NULL, default 0</td>
+<td>Running total</td>
+</tr>
+<tr>
+<td>paymentStatus</td>
+<td>VARCHAR(50)</td>
+<td>NOT NULL, default &#39;none&#39;</td>
+<td>&quot;none&quot;, &quot;paid&quot;, &quot;partial&quot;, &quot;overdue&quot;, &quot;collections&quot;</td>
+</tr>
+<tr>
+<td>lastInvoiceDate</td>
+<td>TIMESTAMP</td>
+<td>nullable</td>
+<td></td>
+</tr>
+<tr>
+<td>createdAt</td>
+<td>TIMESTAMP</td>
+<td>NOT NULL, default NOW()</td>
+<td></td>
+</tr>
+<tr>
+<td>updatedAt</td>
+<td>TIMESTAMP</td>
+<td>NOT NULL, default NOW()</td>
+<td></td>
+</tr>
+<tr>
+<td>UNIQUE(userId, email)</td>
+<td></td>
+<td></td>
+<td>One client entry per email per user</td>
+</tr>
+</tbody></table>
+<p><strong>Indexes:</strong> <code>userId</code>, <code>paymentStatus</code>, <code>email</code></p>
+<h3>invoices</h3>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Constraints</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>id</td>
+<td>UUID</td>
+<td>PK</td>
+<td></td>
+</tr>
+<tr>
+<td>userId</td>
+<td>UUID</td>
+<td>FK → users.id, NOT NULL</td>
+<td>Owner</td>
+</tr>
+<tr>
+<td>clientId</td>
+<td>UUID</td>
+<td>FK → clients.id, NOT NULL</td>
+<td></td>
+</tr>
+<tr>
+<td>invoiceNumber</td>
+<td>VARCHAR(50)</td>
+<td>NOT NULL</td>
+<td>Auto-generated via sequence (see §6.5.2)</td>
+</tr>
+<tr>
+<td>title</td>
+<td>VARCHAR(255)</td>
+<td>NOT NULL</td>
+<td>Description of work</td>
+</tr>
+<tr>
+<td>amount</td>
+<td>DECIMAL(12,2)</td>
+<td>NOT NULL</td>
+<td>Total amount</td>
+</tr>
+<tr>
+<td>currency</td>
+<td>VARCHAR(3)</td>
+<td>NOT NULL, default &#39;USD&#39;</td>
+<td>USD-only for v1</td>
+</tr>
+<tr>
+<td>status</td>
+<td>VARCHAR(50)</td>
+<td>NOT NULL, default &#39;draft&#39;</td>
+<td>&quot;draft&quot;, &quot;sent&quot;, &quot;viewed&quot;, &quot;overdue&quot;, &quot;paid&quot;, &quot;partially_paid&quot;, &quot;canceled&quot;</td>
+</tr>
+<tr>
+<td>dueDate</td>
+<td>DATE</td>
+<td>NOT NULL</td>
+<td></td>
+</tr>
+<tr>
+<td>sentDate</td>
+<td>DATE</td>
+<td>nullable</td>
+<td>When invoice was first sent</td>
+</tr>
+<tr>
+<td>paidDate</td>
+<td>DATE</td>
+<td>nullable</td>
+<td></td>
+</tr>
+<tr>
+<td>paidAmount</td>
+<td>DECIMAL(12,2)</td>
+<td>NOT NULL, default 0</td>
+<td>Amount actually received</td>
+</tr>
+<tr>
+<td>notes</td>
+<td>TEXT</td>
+<td>nullable</td>
+<td>Internal notes (not sent to client)</td>
+</tr>
+<tr>
+<td>terms</td>
+<td>TEXT</td>
+<td>nullable</td>
+<td>Payment terms shown on invoice</td>
+</tr>
+<tr>
+<td>lineItems</td>
+<td>JSONB</td>
+<td>NOT NULL, default &#39;[]&#39;</td>
+<td>Array of {description, quantity, rate, amount}</td>
+</tr>
+<tr>
+<td>reminderSequence</td>
+<td>JSONB</td>
+<td>NOT NULL, default &#39;[]&#39;</td>
+<td>Array of reminder objects (tone, sentAt, message)</td>
+</tr>
+<tr>
+<td>currentReminderStep</td>
+<td>INTEGER</td>
+<td>NOT NULL, default 0</td>
+<td>Which step in the sequence</td>
+</tr>
+<tr>
+<td>nextReminderDate</td>
+<td>DATE</td>
+<td>nullable</td>
+<td>When to send next reminder</td>
+</tr>
+<tr>
+<td>reminderEnabled</td>
+<td>BOOLEAN</td>
+<td>NOT NULL, default true</td>
+<td></td>
+</tr>
+<tr>
+<td>reminderPaused</td>
+<td>BOOLEAN</td>
+<td>NOT NULL, default false</td>
+<td>Paused after partial payment</td>
+</tr>
+<tr>
+<td>deletedAt</td>
+<td>TIMESTAMP</td>
+<td>nullable</td>
+<td>Soft delete</td>
+</tr>
+<tr>
+<td>createdAt</td>
+<td>TIMESTAMP</td>
+<td>NOT NULL, default NOW()</td>
+<td></td>
+</tr>
+<tr>
+<td>updatedAt</td>
+<td>TIMESTAMP</td>
+<td>NOT NULL, default NOW()</td>
+<td></td>
+</tr>
+<tr>
+<td>UNIQUE(userId, invoiceNumber)</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<p><strong>Indexes:</strong> <code>userId</code>, <code>clientId</code>, <code>status</code>, <code>nextReminderDate</code>, <code>dueDate</code>, <code>createdAt</code></p>
+<h3>invoice_shares</h3>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Constraints</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>id</td>
+<td>UUID</td>
+<td>PK</td>
+<td></td>
+</tr>
+<tr>
+<td>invoiceId</td>
+<td>UUID</td>
+<td>FK → invoices.id, UNIQUE, NOT NULL</td>
+<td></td>
+</tr>
+<tr>
+<td>token</td>
+<td>VARCHAR(64)</td>
+<td>UNIQUE, NOT NULL</td>
+<td>Crypto-random token for client access</td>
+</tr>
+<tr>
+<td>expiresAt</td>
+<td>TIMESTAMP</td>
+<td>nullable</td>
+<td>null = never expires</td>
+</tr>
+<tr>
+<td>lastViewedAt</td>
+<td>TIMESTAMP</td>
+<td>nullable</td>
+<td></td>
+</tr>
+<tr>
+<td>viewCount</td>
+<td>INTEGER</td>
+<td>NOT NULL, default 0</td>
+<td></td>
+</tr>
+<tr>
+<td>createdAt</td>
+<td>TIMESTAMP</td>
+<td>NOT NULL, default NOW()</td>
+<td></td>
+</tr>
+</tbody></table>
+<p><strong>Indexes:</strong> <code>token</code> (unique lookup), <code>invoiceId</code></p>
+<h3>reminders</h3>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Constraints</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>id</td>
+<td>UUID</td>
+<td>PK</td>
+<td></td>
+</tr>
+<tr>
+<td>invoiceId</td>
+<td>UUID</td>
+<td>FK → invoices.id, NOT NULL</td>
+<td></td>
+</tr>
+<tr>
+<td>stepNumber</td>
+<td>INTEGER</td>
+<td>NOT NULL</td>
+<td>1, 2, 3, 4, etc.</td>
+</tr>
+<tr>
+<td>tone</td>
+<td>VARCHAR(50)</td>
+<td>NOT NULL</td>
+<td>&quot;casual&quot;, &quot;formal&quot;, &quot;informal&quot;, &quot;legal&quot;</td>
+</tr>
+<tr>
+<td>daysAfterDueDate</td>
+<td>INTEGER</td>
+<td>NOT NULL</td>
+<td>7, 14, 21, 30</td>
+</tr>
+<tr>
+<td>subject</td>
+<td>VARCHAR(500)</td>
+<td>NOT NULL</td>
+<td>Email subject line</td>
+</tr>
+<tr>
+<td>message</td>
+<td>TEXT</td>
+<td>NOT NULL</td>
+<td>Email body</td>
+</tr>
+<tr>
+<td>wasAIGenerated</td>
+<td>BOOLEAN</td>
+<td>NOT NULL, default false</td>
+<td>Whether AI generated this</td>
+</tr>
+<tr>
+<td>wasEditedByUser</td>
+<td>BOOLEAN</td>
+<td>NOT NULL, default false</td>
+<td>Whether user edited before send</td>
+</tr>
+<tr>
+<td>sentAt</td>
+<td>TIMESTAMP</td>
+<td>nullable</td>
+<td>When sent</td>
+</tr>
+<tr>
+<td>openedAt</td>
+<td>TIMESTAMP</td>
+<td>nullable</td>
+<td>When client opened</td>
+</tr>
+<tr>
+<td>deliveryStatus</td>
+<td>VARCHAR(50)</td>
+<td>NOT NULL, default &#39;pending&#39;</td>
+<td>&quot;pending&quot;, &quot;sent&quot;, &quot;delivered&quot;, &quot;bounced&quot;, &quot;opened&quot;</td>
+</tr>
+<tr>
+<td>errorMessage</td>
+<td>TEXT</td>
+<td>nullable</td>
+<td>If delivery failed, store error</td>
+</tr>
+<tr>
+<td>retryCount</td>
+<td>INTEGER</td>
+<td>NOT NULL, default 0</td>
+<td>Number of retry attempts</td>
+</tr>
+<tr>
+<td>createdAt</td>
+<td>TIMESTAMP</td>
+<td>NOT NULL, default NOW()</td>
+<td></td>
+</tr>
+</tbody></table>
+<p><strong>Indexes:</strong> <code>invoiceId</code>, <code>sentAt</code>, <code>deliveryStatus</code></p>
+<h3>tone_samples</h3>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Constraints</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>id</td>
+<td>UUID</td>
+<td>PK</td>
+<td></td>
+</tr>
+<tr>
+<td>userId</td>
+<td>UUID</td>
+<td>FK → users.id, NOT NULL</td>
+<td></td>
+</tr>
+<tr>
+<td>originalText</td>
+<td>TEXT</td>
+<td>NOT NULL</td>
+<td>The freelancer&#39;s sample writing</td>
+</tr>
+<tr>
+<td>context</td>
+<td>VARCHAR(255)</td>
+<td>nullable</td>
+<td>E.g., &quot;How I normally email clients&quot;</td>
+</tr>
+<tr>
+<td>isActive</td>
+<td>BOOLEAN</td>
+<td>NOT NULL, default true</td>
+<td></td>
+</tr>
+<tr>
+<td>createdAt</td>
+<td>TIMESTAMP</td>
+<td>NOT NULL, default NOW()</td>
+<td></td>
+</tr>
+<tr>
+<td>updatedAt</td>
+<td>TIMESTAMP</td>
+<td>NOT NULL, default NOW()</td>
+<td></td>
+</tr>
+</tbody></table>
+<p><strong>Indexes:</strong> <code>userId</code>, <code>isActive</code></p>
+<h3>legal_escalations</h3>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Constraints</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>id</td>
+<td>UUID</td>
+<td>PK</td>
+<td></td>
+</tr>
+<tr>
+<td>invoiceId</td>
+<td>UUID</td>
+<td>FK → invoices.id, UNIQUE, NOT NULL</td>
+<td></td>
+</tr>
+<tr>
+<td>userId</td>
+<td>UUID</td>
+<td>FK → users.id, NOT NULL</td>
+<td></td>
+</tr>
+<tr>
+<td>formalLetterGenerated</td>
+<td>BOOLEAN</td>
+<td>NOT NULL, default false</td>
+<td></td>
+</tr>
+<tr>
+<td>formalLetterContent</td>
+<td>TEXT</td>
+<td>nullable</td>
+<td>Generated demand letter</td>
+</tr>
+<tr>
+<td>formalLetterSentAt</td>
+<td>TIMESTAMP</td>
+<td>nullable</td>
+<td></td>
+</tr>
+<tr>
+<td>smallClaimsGuideGenerated</td>
+<td>BOOLEAN</td>
+<td>NOT NULL, default false</td>
+<td></td>
+</tr>
+<tr>
+<td>smallClaimsGuideContent</td>
+<td>TEXT</td>
+<td>nullable</td>
+<td>Jurisdiction-specific guide</td>
+</tr>
+<tr>
+<td>smallClaimsGuideState</td>
+<td>VARCHAR(100)</td>
+<td>nullable</td>
+<td>User&#39;s state/country</td>
+</tr>
+<tr>
+<td>status</td>
+<td>VARCHAR(50)</td>
+<td>NOT NULL, default &#39;not_started&#39;</td>
+<td>&quot;not_started&quot;, &quot;letter_generated&quot;, &quot;letter_sent&quot;, &quot;small_claims_guide_generated&quot;, &quot;resolved&quot;</td>
+</tr>
+<tr>
+<td>createdAt</td>
+<td>TIMESTAMP</td>
+<td>NOT NULL, default NOW()</td>
+<td></td>
+</tr>
+<tr>
+<td>updatedAt</td>
+<td>TIMESTAMP</td>
+<td>NOT NULL, default NOW()</td>
+<td></td>
+</tr>
+</tbody></table>
+<p><strong>Indexes:</strong> <code>userId</code>, <code>invoiceId</code>, <code>status</code></p>
+<h3>notification_logs (email notifications)</h3>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Constraints</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>id</td>
+<td>UUID</td>
+<td>PK</td>
+<td></td>
+</tr>
+<tr>
+<td>userId</td>
+<td>UUID</td>
+<td>FK → users.id, NOT NULL</td>
+<td></td>
+</tr>
+<tr>
+<td>type</td>
+<td>VARCHAR(50)</td>
+<td>NOT NULL</td>
+<td>&quot;reminder_sent&quot;, &quot;invoice_paid&quot;, &quot;subscription_renewed&quot;, &quot;trial_ending&quot;, &quot;reminder_bounced&quot;, &quot;invoice_viewed&quot;, etc.</td>
+</tr>
+<tr>
+<td>email</td>
+<td>VARCHAR(255)</td>
+<td>NOT NULL</td>
+<td>Recipient email</td>
+</tr>
+<tr>
+<td>subject</td>
+<td>VARCHAR(500)</td>
+<td>NOT NULL</td>
+<td></td>
+</tr>
+<tr>
+<td>body</td>
+<td>TEXT</td>
+<td>NOT NULL</td>
+<td></td>
+</tr>
+<tr>
+<td>metadata</td>
+<td>JSONB</td>
+<td>nullable</td>
+<td>Additional context</td>
+</tr>
+<tr>
+<td>deliveryStatus</td>
+<td>VARCHAR(50)</td>
+<td>NOT NULL, default &#39;sent&#39;</td>
+<td></td>
+</tr>
+<tr>
+<td>resendId</td>
+<td>VARCHAR(255)</td>
+<td>nullable</td>
+<td>Resend API response ID</td>
+</tr>
+<tr>
+<td>errorMessage</td>
+<td>TEXT</td>
+<td>nullable</td>
+<td></td>
+</tr>
+<tr>
+<td>createdAt</td>
+<td>TIMESTAMP</td>
+<td>NOT NULL, default NOW()</td>
+<td></td>
+</tr>
+</tbody></table>
+<p><strong>Indexes:</strong> <code>userId</code>, <code>type</code>, <code>deliveryStatus</code>, <code>createdAt</code></p>
+<h3>in_app_notifications (in-app unread count)</h3>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Type</th>
+<th>Constraints</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>id</td>
+<td>UUID</td>
+<td>PK</td>
+<td></td>
+</tr>
+<tr>
+<td>userId</td>
+<td>UUID</td>
+<td>FK → users.id, NOT NULL</td>
+<td></td>
+</tr>
+<tr>
+<td>type</td>
+<td>VARCHAR(50)</td>
+<td>NOT NULL</td>
+<td>&quot;invoice_viewed&quot;, &quot;payment_received&quot;, &quot;reminder_bounced&quot;, &quot;subscription_expiring&quot;</td>
+</tr>
+<tr>
+<td>title</td>
+<td>VARCHAR(255)</td>
+<td>NOT NULL</td>
+<td>Short display text</td>
+</tr>
+<tr>
+<td>body</td>
+<td>TEXT</td>
+<td>nullable</td>
+<td>Optional detail</td>
+</tr>
+<tr>
+<td>link</td>
+<td>VARCHAR(500)</td>
+<td>nullable</td>
+<td>Route to navigate to (e.g., &quot;/app/invoices/abc123&quot;)</td>
+</tr>
+<tr>
+<td>isRead</td>
+<td>BOOLEAN</td>
+<td>NOT NULL, default false</td>
+<td></td>
+</tr>
+<tr>
+<td>createdAt</td>
+<td>TIMESTAMP</td>
+<td>NOT NULL, default NOW()</td>
+<td></td>
+</tr>
+</tbody></table>
+<p><strong>Indexes:</strong> <code>userId</code>, <code>isRead</code>, <code>createdAt</code></p>
+<h3>Soft Delete Implementation</h3>
+<p>Tables with soft delete (<code>users</code>, <code>invoices</code>):</p>
+<ul>
+<li><code>deletedAt</code> column set to <code>NOW()</code> on &quot;delete&quot;</li>
+<li>Prisma middleware automatically filters <code>WHERE deletedAt IS NULL</code> for all queries</li>
+<li>Admin panel shows a &quot;Show deleted&quot; toggle that bypasses the filter</li>
+<li>User deletion also creates <code>in_app_notification</code> for all affected reminders</li>
+<li>Permanent purge runs monthly via cron job</li>
+</ul>
+<hr>
+<h1>6. FEATURE SPECIFICATIONS</h1>
+<h2>6.1 Authentication System</h2>
+<h3>6.1.1 Sign Up / Login</h3>
+<p><strong>Pages:</strong></p>
+<ul>
+<li><code>/auth/signin</code> — Login page</li>
+<li><code>/auth/signup</code> — Registration page</li>
+<li><code>/auth/error</code> — Error display page</li>
+<li><code>/auth/verify-request</code> — Email verification notice</li>
+</ul>
+<p><strong>Providers:</strong></p>
+<ol>
+<li>Email + Password (credentials provider)<ul>
+<li>Password requirements: minimum 8 characters, at least 1 uppercase, 1 number</li>
+<li>Email verification via magic link (Resend)</li>
+<li>Rate limiting: 5 attempts per 15 minutes per email</li>
+</ul>
+</li>
+<li>Google OAuth<ul>
+<li>Scope: email, profile</li>
+</ul>
+</li>
+<li>GitHub OAuth<ul>
+<li>Scope: read:user, user:email</li>
+</ul>
+</li>
+</ol>
+<p><strong>Flow:</strong></p>
+<ol>
+<li>User visits <code>/auth/signup</code></li>
+<li>Options: &quot;Continue with Google&quot;, &quot;Continue with GitHub&quot;, or &quot;Sign up with Email&quot;</li>
+<li>Email signup: enter email → create password → verification email sent → click link → redirect to <code>/onboarding</code></li>
+<li>OAuth signup: redirect to provider → authorize → callback → check if user exists → if new, redirect to <code>/onboarding</code></li>
+</ol>
+<p><strong>Social Login Account Linking:</strong></p>
+<ul>
+<li>If a user signs up with Google (<a href="mailto:email@example.com">email@example.com</a>) and later signs in with GitHub (same verified email), the accounts are linked automatically (matched by email)</li>
+<li>If emails don&#39;t match, they remain separate accounts. Future: add manual account linking in settings.</li>
+</ul>
+<p><strong>Password Reset Flow:</strong></p>
+<ul>
+<li>&quot;Forgot Password?&quot; link on <code>/auth/signin</code> → enter email → Resend sends magic link → click link → set new password</li>
+<li>Uses Resend email template <code>password-reset.tsx</code></li>
+<li>Token expires in 1 hour</li>
+<li>Rate limited: 1 request per 5 minutes per email</li>
+</ul>
+<p><strong>Middleware Behavior:</strong></p>
+<ul>
+<li>Protected routes: <code>/app/*</code>, <code>/api/*</code> (except auth endpoints, webhooks)</li>
+<li>Redirect unauthenticated users to <code>/auth/signin</code></li>
+<li>Redirect authenticated users away from <code>/auth/*</code></li>
+<li>Admin routes <code>/admin/*</code> protected by role check (<code>user.role === &#39;admin&#39;</code>)</li>
+</ul>
+<h3>6.1.2 Admin User Seeding</h3>
+<p>On first deploy, seed an admin user via Prisma seed script:</p>
+<pre><code class="language-typescript">// prisma/seed.ts
+const adminEmail = process.env.ADMIN_EMAIL || &#39;admin@deathear.app&#39;;
+const adminPassword = process.env.ADMIN_PASSWORD || &#39;changeme123!&#39;;
+
+// Create admin user with role &#39;admin&#39;
+await prisma.user.create({
+  data: {
+    email: adminEmail,
+    name: &#39;DeathFear Admin&#39;,
+    role: &#39;admin&#39;,
+    hashedPassword: await bcrypt.hash(adminPassword, 12),
+  },
+});
+
+// Create default subscription plans
+await prisma.subscriptionPlan.createMany({
+  data: [
+    {
+      name: &#39;Free&#39;,
+      slug: &#39;free&#39;,
+      priceMonthly: 0,
+      priceAnnual: 0,
+      invoicesPerMonth: 3,
+      clientsAllowed: 5,
+      aiToneEnabled: false,
+      legalEscalationEnabled: false,
+      prioritySupport: false,
+      features: [&#39;3 invoices/month&#39;, &#39;5 clients&#39;, &#39;Basic templates&#39;, &#39;Email support&#39;],
+      sortOrder: 0,
+    },
+    {
+      name: &#39;Premium&#39;,
+      slug: &#39;premium&#39;,
+      priceMonthly: 19.00,
+      priceAnnual: 190.00,
+      invoicesPerMonth: 0, // unlimited
+      clientsAllowed: 0, // unlimited
+      aiToneEnabled: true,
+      legalEscalationEnabled: true,
+      prioritySupport: true,
+      features: [&#39;Unlimited invoices&#39;, &#39;Unlimited clients&#39;, &#39;AI tone adaptation&#39;, &#39;Legal escalation&#39;, &#39;Priority support&#39;, &#39;Analytics&#39;],
+      sortOrder: 1,
+    },
+  ],
+});
+</code></pre>
+<h3>6.1.3 Onboarding Flow</h3>
+<p><strong>Route:</strong> <code>/onboarding</code></p>
+<p><strong>Steps:</strong></p>
+<ol>
+<li><strong>Welcome</strong> — Brief intro to DeathFear (+ &quot;Built for freelancers by freelancers&quot;)</li>
+<li><strong>Tone Sample</strong> — Collect writing sample for AI voice cloning<ul>
+<li>Textarea: &quot;Write a short email or message in the way you typically communicate with clients. This helps us match your voice.&quot;</li>
+<li>Placeholder example provided</li>
+<li><strong>Minimum length:</strong> 100 characters (enforced on the client and server)</li>
+<li>Skip button available → system uses professional default templates with no AI adaptation</li>
+<li>If sample is provided and user is on Free plan, the sample is saved but AI tone generation is gated behind Premium</li>
+</ul>
+</li>
+<li><strong>First Client</strong> — Optional quick-add form: Name, Email, Company</li>
+<li><strong>Subscription Selection</strong> — Free vs Premium comparison table<ul>
+<li>If Free selected → new user gets a <strong>Free subscription</strong> (created automatically), redirect to <code>/app/dashboard</code></li>
+<li>If Premium selected → redirect to <code>/app/subscribe</code></li>
+<li>Subscription selection can be <strong>skipped entirely</strong>: user defaults to Free plan, can upgrade later</li>
+</ul>
+</li>
+</ol>
+<h2>6.2 Landing Page</h2>
+<p><strong>Route:</strong> <code>/</code> (public)</p>
+<p><strong>Sections:</strong></p>
+<ol>
+<li><strong>Hero</strong> — Headline, subheading, CTA button (&quot;Start Free →&quot;)<ul>
+<li>Background: gradient or subtle animated element</li>
+</ul>
+</li>
+<li><strong>Problem</strong> — &quot;You did the work. Getting paid shouldn&#39;t be the harder part.&quot;<ul>
+<li>Stats: &quot;Freelancers spend 20+ hours per year chasing payments&quot;</li>
+<li>Visual: invoice timeline showing escalation</li>
+</ul>
+</li>
+<li><strong>How It Works</strong> — 3-step process<ul>
+<li>Step 1: Create &amp; Send Invoice</li>
+<li>Step 2: DeathFear Auto-Reminds (with escalating tone)</li>
+<li>Step 3: Get Paid (or escalate legally)</li>
+</ul>
+</li>
+<li><strong>Features</strong> — Grid of feature cards<ul>
+<li>Automated Reminders</li>
+<li>AI Voice Matching</li>
+<li>Client Dashboard</li>
+<li>Legal Escalation</li>
+<li>Smart Templates</li>
+<li>Analytics</li>
+</ul>
+</li>
+<li><strong>Pricing</strong> — Side-by-side comparison: Free vs Premium<ul>
+<li>Free: 3 invoices/month, 5 clients, basic templates, email support</li>
+<li>Premium: Unlimited invoices, unlimited clients, AI tone, legal escalation, priority support</li>
+<li>Monthly &amp; Annual pricing shown</li>
+</ul>
+</li>
+<li><strong>Footer</strong> — Links, social, legal</li>
+</ol>
+<p><strong>Components:</strong></p>
+<ul>
+<li>Navigation bar (Logo, Features, Pricing, Login, Get Started button)</li>
+<li>Feature card component</li>
+<li>Pricing card component</li>
+<li>CTA section</li>
+<li>Footer</li>
+</ul>
+<h2>6.3 Application Shell</h2>
+<p><strong>Layout:</strong> <code>/app/(dashboard)/layout.tsx</code></p>
+<p><strong>Components:</strong></p>
+<ul>
+<li><strong>Sidebar</strong> (collapsible on mobile):<ul>
+<li>Logo + Brand name</li>
+<li>Nav items:<ul>
+<li>Dashboard (icon: LayoutDashboard)</li>
+<li>Invoices (icon: FileText)</li>
+<li>Clients (icon: Users)</li>
+<li>Reminder Sequences (icon: Bell)</li>
+<li>Legal Escalation (icon: Scale)</li>
+<li>Settings (icon: Settings)</li>
+</ul>
+</li>
+<li>Subscription badge (Free / Premium)</li>
+<li>User avatar + name at bottom</li>
+</ul>
+</li>
+<li><strong>Top bar</strong>:<ul>
+<li>Mobile menu toggle (hamburger)</li>
+<li>Breadcrumb</li>
+<li>Notification bell (with unread count)</li>
+<li>Create Invoice button (primary CTA)</li>
+</ul>
+</li>
+<li><strong>Main content area</strong> (padding: p-6)</li>
+</ul>
+<h2>6.4 Dashboard</h2>
+<p><strong>Route:</strong> <code>/app/dashboard</code></p>
+<p><strong>Components &amp; Data:</strong></p>
+<ol>
+<li><p><strong>Stats Cards</strong> (4 cards in a grid)</p>
+<ul>
+<li>Total outstanding: SUM of unpaid invoices amount (currency formatted)</li>
+<li>Overdue invoices: COUNT where status = &#39;overdue&#39; (red accent)</li>
+<li>Paid this month: SUM where paidDate is this month (green accent)</li>
+<li>Active reminders: COUNT where nextReminderDate is not null (blue accent)</li>
+</ul>
+</li>
+<li><p><strong>Recent Invoices</strong> (table, last 5 invoices)</p>
+<ul>
+<li>Columns: Invoice #, Client, Amount, Status (badge), Due Date, Actions</li>
+<li>Status badges: draft (gray), sent (blue), viewed (yellow), overdue (red), paid (green)</li>
+<li>Actions: View, Send Reminder (if overdue), Mark Paid</li>
+</ul>
+</li>
+<li><p><strong>Payment Status Chart</strong> (pie/donut chart using recharts)</p>
+<ul>
+<li>Segments: Paid, Overdue, Pending, Draft</li>
+</ul>
+</li>
+<li><p><strong>Upcoming Reminders</strong> (list, next 5 upcoming)</p>
+<ul>
+<li>Invoice #, Client, Days until reminder, Tone</li>
+</ul>
+</li>
+<li><p><strong>Quick Actions</strong> card:</p>
+<ul>
+<li>&quot;Create New Invoice&quot; button</li>
+<li>&quot;Add New Client&quot; button</li>
+<li>&quot;Send Bulk Reminders&quot; button (Premium feature)</li>
+</ul>
+</li>
+</ol>
+<h2>6.5 Invoice Management</h2>
+<h3>6.5.1 Invoice List</h3>
+<p><strong>Route:</strong> <code>/app/invoices</code></p>
+<p><strong>Features:</strong></p>
+<ul>
+<li>Search by invoice number, client name, or amount</li>
+<li>Filter by status (draft, sent, overdue, paid, canceled)</li>
+<li>Sort by date, amount, status</li>
+<li>Pagination (10 per page)</li>
+<li>Bulk actions: Select invoices → Send reminders, Mark as paid, Delete</li>
+</ul>
+<p><strong>Implementation Details:</strong></p>
+<ul>
+<li><strong>Search:</strong> <strong>Server-side</strong> via Prisma <code>WHERE { client: { name: { contains: query, mode: &#39;insensitive&#39; } } }</code> (PostgreSQL case-insensitive). Debounced 300ms input.</li>
+<li><strong>Filter:</strong> <strong>Server-side</strong> via Prisma <code>WHERE { status: { in: selectedFilters } }</code>. Filters stored as <strong>URL search params</strong> (e.g., <code>/app/invoices?status=overdue&amp;sort=amount_desc</code>) so they&#39;re shareable/persist on navigation.</li>
+<li><strong>Sort:</strong> <strong>Server-side</strong> via Prisma <code>orderBy</code>. Default: <code>createdAt DESC</code>. Options: <code>amount_asc</code>, <code>amount_desc</code>, <code>dueDate_asc</code>, <code>dueDate_desc</code>, <code>createdAt_desc</code>, <code>createdAt_asc</code>.</li>
+<li><strong>Pagination:</strong> <strong>Server-side</strong> cursor-based (for large datasets) OR offset-based (simpler, fine for &lt;10k invoices). Use offset with <code>skip</code>/<code>take</code>.</li>
+<li><strong>Bulk Actions:</strong> Checkbox column on the left. When 1+ selected, a sticky bottom action bar appears: &quot;Send Reminder&quot; (opens tone selector), &quot;Mark as Paid&quot; (opens batch date modal), &quot;Delete&quot; (confirmation dialog). &quot;Select All&quot; checkbox selects all items on current page (not all pages).</li>
+</ul>
+<p><strong>Table Columns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>☐ (checkbox)</td>
+<td>Bulk select</td>
+</tr>
+<tr>
+<td>Invoice #</td>
+<td>Clickable, links to detail</td>
+</tr>
+<tr>
+<td>Client</td>
+<td>Name + company</td>
+</tr>
+<tr>
+<td>Amount</td>
+<td>Formatted currency</td>
+</tr>
+<tr>
+<td>Status</td>
+<td>Color-coded badge</td>
+</tr>
+<tr>
+<td>Due Date</td>
+<td>Relative (3 days ago, Tomorrow, etc.) + overdue indicator</td>
+</tr>
+<tr>
+<td>Sent</td>
+<td>Checkmark if sent</td>
+</tr>
+<tr>
+<td>Paid</td>
+<td>Date or &quot;-&quot;</td>
+</tr>
+<tr>
+<td>Actions</td>
+<td>View, Send Reminder, More (dropdown)</td>
+</tr>
+</tbody></table>
+<h3>6.5.2 Create / Edit Invoice</h3>
+<p><strong>Route:</strong> <code>/app/invoices/new</code> and <code>/app/invoices/[id]/edit</code></p>
+<p><strong>Form Fields:</strong></p>
+<ol>
+<li><strong>Client Selection</strong><ul>
+<li>Dropdown of existing clients + &quot;Add New Client&quot; button</li>
+<li>Or type to search</li>
+</ul>
+</li>
+<li><strong>Invoice Details</strong><ul>
+<li>Title/Description of work (text input, required)</li>
+<li>Invoice Number (auto-generated, editable: &quot;DF-{YEAR}-{SEQUENTIAL}&quot;)<ul>
+<li><strong>Counter mechanism:</strong> Use a <code>user_invoice_counters</code> table row that&#39;s atomically incremented within a Prisma transaction to prevent race conditions under concurrent requests:<pre><code class="language-prisma">model UserInvoiceCounter {
+  id         String   @id @default(uuid())
+  userId     String   @unique
+  year       Int
+  counter    Int      @default(0)
+}
+</code></pre>
+Then within a transaction:<pre><code class="language-typescript">const { counter } = await prisma.userInvoiceCounter.upsert({
+  where: { userId },
+  create: { userId, year: currentYear, counter: 1 },
+  update: { counter: { increment: 1 } },
+});
+const invoiceNumber = `DF-${currentYear}-${String(counter).padStart(4, &#39;0&#39;)}`;
+</code></pre>
+</li>
+<li>Example: For user&#39;s first invoice in 2025 → &quot;DF-2025-0001&quot;</li>
+<li><strong>Invoice archival:</strong> Invoices with status &quot;paid&quot; and <code>paidDate</code> older than 12 months are automatically archived. Archived invoices are hidden from the main invoice list by default (filter toggle: &quot;Show archived&quot;). The archive process runs monthly via cron and moves them out of the active query scope (sets <code>deletedAt</code> in v1 as a soft-archive mechanism). Only admins can permanently delete archived invoices.</li>
+</ul>
+</li>
+<li><strong>Form Draft Persistence:</strong> Invoice form data is saved to <code>localStorage</code> every 30 seconds while editing. If the user navigates away, data is restored on return with a banner: &quot;Draft restored from {time ago}. Continue editing or discard.&quot; Cleared on successful save. localStorage key: <code>deathear_invoice_draft_{userId}</code>. Only applies to the create form, not edit.</li>
+<li>Issue Date (date picker, default today)</li>
+<li>Due Date (date picker)</li>
+<li>Payment Terms (dropdown: &quot;Net 15&quot;, &quot;Net 30&quot;, &quot;Net 60&quot;, &quot;Due on Receipt&quot;, Custom)</li>
+</ul>
+</li>
+<li><strong>Line Items</strong> (dynamic array)<ul>
+<li>Description (text)</li>
+<li>Quantity (number, default 1)</li>
+<li>Rate (currency input)</li>
+<li>Amount (calculated: quantity × rate)</li>
+<li>Add Line Item button</li>
+</ul>
+</li>
+<li><strong>Subtotal + Tax</strong><ul>
+<li>Subtotal (auto-calculated)</li>
+<li>Tax Rate (% or fixed amount)</li>
+<li>Discount (% or fixed amount)</li>
+<li>Total (auto-calculated)</li>
+</ul>
+</li>
+<li><strong>Notes &amp; Terms</strong><ul>
+<li>Notes (textarea, optional — shown to client)</li>
+<li>Internal notes (textarea, optional — not shown)</li>
+</ul>
+</li>
+<li><strong>Reminder Settings</strong><ul>
+<li>Toggle: Enable automated reminders (default: on)</li>
+<li>First reminder: X days after due (default: 7)</li>
+<li>Reminder frequency: X days (default: 7)</li>
+<li>Tone progression:<ul>
+<li>Step 1: Casual (friendly nudge)</li>
+<li>Step 2: Formal (professional reminder)</li>
+<li>Step 3: Informal (direct, personal)</li>
+<li>Step 4: Legal (final notice)</li>
+</ul>
+</li>
+<li>Customize tone per step (click to edit message)</li>
+<li>AI Tone toggle (Premium only — &quot;Use AI to match my voice&quot;)</li>
+<li><strong>Reminder scheduling for existing overdue invoices:</strong> If reminders are enabled on an invoice that is already past due, the first reminder is sent immediately (on save), then subsequent reminders follow the normal frequency interval. The tone starts at the appropriate step based on how overdue the invoice is: 1–7 days overdue → Step 1 (Casual), 8–14 days → Step 2 (Formal), 15–21 days → Step 3 (Informal), 22+ days → Step 4 (Legal).</li>
+</ul>
+</li>
+<li><strong>Save &amp; Actions</strong><ul>
+<li>&quot;Save as Draft&quot; button</li>
+<li>&quot;Save &amp; Send&quot; button (sends invoice + starts reminder sequence)</li>
+</ul>
+</li>
+</ol>
+<p><strong>Validation (Zod Schema):</strong></p>
+<pre><code class="language-typescript">const invoiceSchema = z.object({
+  clientId: z.string().uuid(),
+  title: z.string().min(1, &quot;Title is required&quot;).max(255),
+  invoiceNumber: z.string().min(1).max(50),
+  issueDate: z.date(),
+  dueDate: z.date().min(z.date(), &quot;Due date must be in the future&quot;),
+  paymentTerms: z.enum([&quot;net15&quot;, &quot;net30&quot;, &quot;net60&quot;, &quot;due_on_receipt&quot;, &quot;custom&quot;]),
+  lineItems: z.array(z.object({
+    description: z.string().min(1),
+    quantity: z.number().positive(),
+    rate: z.number().positive(),
+    amount: z.number().positive(),
+  })).min(1, &quot;At least one line item is required&quot;),
+  taxRate: z.number().min(0).max(100).optional().default(0),
+  discountPercent: z.number().min(0).max(100).optional().default(0),
+  notes: z.string().optional(),
+  internalNotes: z.string().optional(),
+  reminderEnabled: z.boolean().default(true),
+  reminderFirstAfterDays: z.number().min(1).default(7),
+  reminderFrequencyDays: z.number().min(1).default(7),
+});
+</code></pre>
+<h3>6.5.3 Invoice Detail / View</h3>
+<p><strong>Route:</strong> <code>/app/invoices/[id]</code></p>
+<p><strong>Sections:</strong></p>
+<ol>
+<li><strong>Header</strong> — Invoice #, Status badge, Actions dropdown (Edit, Send, Delete, Duplicate)</li>
+<li><strong>Invoice Preview</strong> — Rendered invoice (printable, PDF downloadable)<ul>
+<li>Header: Logo (if set), Invoice #, Date, Due Date</li>
+<li>Bill To: Client name, company, email</li>
+<li>Line items table</li>
+<li>Totals section</li>
+<li>Notes</li>
+</ul>
+</li>
+<li><strong>Timeline / Activity Log</strong><ul>
+<li>Invoice created</li>
+<li>Invoice sent (with date)</li>
+<li>Reminder 1 sent (date, tone, delivery status)</li>
+<li>Reminder 2 sent...</li>
+<li>Invoice viewed (if client opened via share link)</li>
+<li>Payment received (date, amount)</li>
+</ul>
+</li>
+<li><strong>Reminder Sequence</strong> (visual timeline or flow chart)<ul>
+<li>Each step: Tone, Status (pending/sent/delivered/opened), Scheduled date</li>
+<li>&quot;Send Now&quot; button for pending steps</li>
+<li>&quot;Edit Message&quot; button (opens modal with message preview + AI regenerate)</li>
+<li><strong>Pause Reminders</strong> button when <code>reminderPaused</code> is true due to partial payment</li>
+</ul>
+</li>
+<li><strong>Payment Section</strong><ul>
+<li>&quot;Mark as Paid&quot; button (opens modal: date, amount, payment method)</li>
+<li><strong>Partial Payment Support:</strong> User can mark a partial payment. When this happens:<ul>
+<li><code>paidAmount</code> is updated but invoice status remains &quot;partially_paid&quot;</li>
+<li><code>reminderPaused</code> is set to true (reminders pause automatically)</li>
+<li>The reminder sequence is paused for 14 days to allow for remaining payment</li>
+<li>If no further payment received in 14 days, <code>reminderPaused</code> flips back to false and reminders resume</li>
+<li>User can manually resume reminders at any time</li>
+</ul>
+</li>
+<li>Payment history</li>
+</ul>
+</li>
+</ol>
+<h3>6.5.4 Invoice PDF Generation</h3>
+<p><strong>Library:</strong> <code>@react-pdf/renderer</code> (v4.x)</p>
+<p><strong>Important — Serverless Compatibility:</strong></p>
+<ul>
+<li>Use <code>@react-pdf/renderer</code> on the server via API route. The library is ~5MB which fits within Vercel Pro&#39;s 100MB limit.</li>
+<li><strong>Font registration:</strong> Inter font must be registered via <code>Font.register()</code> with the <code>.ttf</code> files hosted in <code>/public/fonts/</code> (download Inter from Google Fonts and bundle).</li>
+<li><strong>Logo images:</strong> Server-side PDF generation cannot load external URLs. Logo is fetched server-side via <code>fetch()</code> and converted to base64 data URI, or stored in the <code>invoice</code> record as a base64 string.</li>
+<li><strong>API Route:</strong> <code>GET /api/invoices/[id]/pdf</code> → returns <code>Content-Type: application/pdf</code> with the generated PDF buffer.</li>
+</ul>
+<p><strong>Spec:</strong></p>
+<ul>
+<li>Clean, professional design</li>
+<li>Includes: Logo (if set, as base64), Invoice #, Dates, Client info, Line items, Totals, Notes, Payment terms</li>
+<li>&quot;DeathFear&quot; watermark in footer (light gray, rotated)</li>
+<li><strong>Filename:</strong> <code>invoice-{invoiceNumber}.pdf</code> (e.g., <code>invoice-DF-2025-0001.pdf</code>)</li>
+<li>Download button in invoice detail view triggers a <code>window.open()</code> to the PDF API route</li>
+</ul>
+<h3>6.5.5 Client Invoice Portal (Tokenized Access)</h3>
+<p><strong>Route:</strong> <code>/invoice/[token]</code> (public, no auth required)</p>
+<p><strong>Purpose:</strong> Allow clients to view, pay, and track invoices without needing a DeathFear account.</p>
+<p><strong>Flow:</strong></p>
+<ol>
+<li>When an invoice is sent, an <code>invoice_shares</code> record is created with a crypto-random 64-character token</li>
+<li>The &quot;View Invoice&quot; link in reminder emails is: <code>https://deathear.app/invoice/{token}</code></li>
+<li>Clients visit this URL, see the invoice rendered for printing</li>
+<li><strong>Page layout:</strong><ul>
+<li>Clean, minimal layout (no DeathFear sidebar/nav — just the invoice)</li>
+<li>Header: &quot;Invoice from {freelancerName}&quot; with freelancer&#39;s company/logo</li>
+<li>Invoice details: number, dates, line items, totals</li>
+<li>Status bar: &quot;This invoice is [status]&quot; with dates</li>
+<li>&quot;Pay Now&quot; button (if unpaid/overdue) → links to freelancer&#39;s preferred payment method (or a future payment collection feature)</li>
+</ul>
+</li>
+<li>When a client views the page, <code>lastViewedAt</code> and <code>viewCount</code> are updated, and the invoice status changes to &quot;viewed&quot;</li>
+<li>The freelancer gets a notification: &quot;{clientName} viewed invoice {number}&quot;</li>
+</ol>
+<p><strong>Token Security:</strong></p>
+<ul>
+<li>Tokens generated via <code>crypto.randomBytes(32).toString(&#39;hex&#39;)</code> (64 hex chars)</li>
+<li>Tokens are one-way: no API exposes the token, it&#39;s only in the email link</li>
+<li>Optional expiry: freelancer can set &quot;Link expires in 30 days&quot; in invoice settings</li>
+<li>No sensitive data exposed: only invoice details (no freelancer&#39;s other clients, no payment account details)</li>
+</ul>
+<hr>
+<h2>6.6 Client Management</h2>
+<h3>6.6.1 Client List</h3>
+<p><strong>Route:</strong> <code>/app/clients</code></p>
+<p><strong>Features:</strong></p>
+<ul>
+<li>Search by name, email, company</li>
+<li>Filter by payment status (paid, overdue, none)</li>
+<li>Sort by name, total invoiced, last invoice date</li>
+<li>Free plan: limited to 5 clients (hides &quot;Add Client&quot; button when at limit)</li>
+</ul>
+<p><strong>Table Columns:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Name</td>
+<td>+ company below</td>
+</tr>
+<tr>
+<td>Email</td>
+<td>Clickable → mailto:</td>
+</tr>
+<tr>
+<td>Total Invoiced</td>
+<td>Sum of all invoices</td>
+</tr>
+<tr>
+<td>Total Paid</td>
+<td>Sum of paid invoices</td>
+</tr>
+<tr>
+<td>Balance</td>
+<td>Outstanding amount</td>
+</tr>
+<tr>
+<td>Status</td>
+<td>Badge: Good Standing, Overdue, Collections</td>
+</tr>
+<tr>
+<td>Last Invoice</td>
+<td>Date</td>
+</tr>
+<tr>
+<td>Actions</td>
+<td>View, New Invoice, Send Reminder</td>
+</tr>
+</tbody></table>
+<h3>6.6.2 Client Detail</h3>
+<p><strong>Route:</strong> <code>/app/clients/[id]</code></p>
+<p><strong>Sections:</strong></p>
+<ol>
+<li><strong>Client Info Card</strong> — Name, email, company, phone, notes</li>
+<li><strong>Payment Summary</strong> — Total invoiced, total paid, balance, invoice count</li>
+<li><strong>Payment History Chart</strong> — Bar chart showing payments over time</li>
+<li><strong>Invoice History</strong> — Table of all invoices for this client</li>
+<li><strong>Quick Actions</strong> — New Invoice, Send Reminder (with tone selector)</li>
+</ol>
+<h3>6.6.3 Add / Edit Client</h3>
+<p><strong>Modal or Page:</strong></p>
+<ul>
+<li>Name (required)</li>
+<li>Email (required, validated)</li>
+<li>Company (optional)</li>
+<li>Phone (optional)</li>
+<li>Notes (optional textarea)</li>
+</ul>
+<h2>6.7 Reminder Engine (Core Feature)</h2>
+<h3>6.7.1 Default Reminder Sequence</h3>
+<p>When an invoice is sent, the following default sequence is created:</p>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Days Past Due</th>
+<th>Tone</th>
+<th>Subject Example</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td>7</td>
+<td>Casual</td>
+<td>&quot;Quick heads up about invoice {#}&quot;</td>
+</tr>
+<tr>
+<td>2</td>
+<td>14</td>
+<td>Formal</td>
+<td>&quot;Payment Reminder: Invoice {#} Due&quot;</td>
+</tr>
+<tr>
+<td>3</td>
+<td>21</td>
+<td>Informal</td>
+<td>&quot;Hey [Name], just following up on invoice {#}&quot;</td>
+</tr>
+<tr>
+<td>4</td>
+<td>30</td>
+<td>Legal</td>
+<td>&quot;Final Notice: Invoice {#} — Outstanding Balance&quot;</td>
+</tr>
+</tbody></table>
+<h3>6.7.2 Reminder Message Templates</h3>
+<p><strong>Tone: Casual (Step 1)</strong></p>
+<pre><code>Subject: Quick heads up about invoice {invoiceNumber}
+
+Hi {clientName},
+
+Hope you&#39;re doing well! Just wanted to gently remind you that invoice {invoiceNumber} for {amount} was due on {dueDate}.
+
+If it&#39;s already been paid, please ignore this message — and thank you! If not, no worries at all, just a friendly nudge.
+
+Let me know if you have any questions.
+
+Best,
+{senderName}
+</code></pre>
+<p><strong>Tone: Formal (Step 2)</strong></p>
+<pre><code>Subject: Payment Reminder: Invoice {invoiceNumber}
+
+Dear {clientName},
+
+This is a reminder that Invoice {invoiceNumber} in the amount of {amount} was due on {dueDate} and remains unpaid.
+
+We kindly request that payment be made at your earliest convenience. If you have already sent payment, please disregard this notice.
+
+Please refer to the attached invoice for payment details.
+
+Sincerely,
+{senderName}
+{senderCompany}
+</code></pre>
+<p><strong>Tone: Informal (Step 3)</strong></p>
+<pre><code>Subject: Following up on invoice {invoiceNumber}
+
+Hey {clientName},
+
+I&#39;m just following up on invoice {invoiceNumber} ({amount}) which is now {daysOverdue} days past due.
+
+I really need to get this sorted so I can close out the books. Can you please take care of this by the end of the week?
+
+Thanks,
+{senderName}
+</code></pre>
+<p><strong>Tone: Legal (Step 4)</strong></p>
+<pre><code>Subject: FINAL NOTICE: Invoice {invoiceNumber} — {daysOverdue} Days Overdue
+
+{clientName},
+
+This is a formal notification that Invoice {invoiceNumber} in the amount of {amount} is now {daysOverdue} days past due.
+
+If payment is not received within 7 days, we will have no choice but to pursue legal action, which may include:
+
+1. Filing a formal demand letter
+2. Reporting to credit bureaus
+3. Pursuing the claim in small claims court
+
+Please remit payment immediately to avoid escalation.
+
+{senderName}
+</code></pre>
+<h3>6.7.3 AI Tone Adaptation (Premium Feature)</h3>
+<p><strong>Flow:</strong></p>
+<ol>
+<li>User provides writing sample(s) during onboarding or in Settings</li>
+<li>When AI tone is enabled, the system:
+a. Sends the base template + the user&#39;s tone sample to OpenAI API
+b. Prompt: &quot;Rewrite the following reminder in the style and voice of the user&#39;s sample. Keep the same meaning and urgency level ({tone}). Return only the rewritten message.&quot;
+c. Shows the AI-generated version to the user for review
+d. User can: Accept, Edit, or Regenerate</li>
+<li>Once accepted, the AI version is saved as the reminder message for that step</li>
+<li>The system learns: stores accepted rewrites to improve future generations</li>
+</ol>
+<p><strong>Cost &amp; Usage Limits:</strong></p>
+<ul>
+<li>OpenAI API cost for AI tone generation is <strong>baked into the Premium subscription</strong> ($19/mo)</li>
+<li>Each Premium user gets <strong>50 AI tone generations per month</strong> (covers ~12 invoices × 4 reminders = 48 generations)</li>
+<li>If a user exceeds 50 generations, they receive a notification: &quot;You&#39;ve used your AI generations for this month. They&#39;ll reset on {date}.&quot; Can upgrade or wait.</li>
+<li>Heavy usage beyond 50/mo costs DeathFear ~$1–$2/user at current OpenAI pricing — the cap prevents abuse while covering normal usage</li>
+<li>Monthly cap resets with billing cycle</li>
+<li><strong>Rate limit fallback:</strong> If OpenAI API returns a 429 (rate limited) or 5xx error, the system falls back to the pre-written template without AI adaptation. The reminder is still sent. An error is logged and the freelancer is notified via in-app notification.</li>
+</ul>
+<p><strong>OpenAI Configuration:</strong></p>
+<pre><code class="language-typescript">const generateAIReminder = async (
+  sampleText: string,
+  templateMessage: string,
+  tone: &#39;casual&#39; | &#39;formal&#39; | &#39;informal&#39; | &#39;legal&#39;
+) =&gt; {
+  try {
+    const response = await openai.chat.completions.create({
+      model: &#39;gpt-4o-mini&#39;,
+      messages: [
+        {
+          role: &#39;system&#39;,
+          content: `You are a writing assistant. Rewrite the given reminder message in the user&#39;s voice.
+          - Tone level: ${tone}
+          - Match the user&#39;s writing style, vocabulary, and sentence structure from their sample.
+          - Keep all key information (invoice number, amount, dates, urgency).
+          - Do not add placeholders the user didn&#39;t provide.
+          - Return ONLY the rewritten message, no explanations.`
+        },
+        {
+          role: &#39;user&#39;,
+          content: `Here is a sample of how the user writes:\n\n${sampleText}\n\n---\n\nHere is the reminder to rewrite:\n\n${templateMessage}`
+        }
+      ],
+      temperature: 0.7,
+      max_tokens: 500,
+    });
+
+    return response.choices[0]?.message?.content || templateMessage;
+  } catch (error) {
+    // On any OpenAI error (rate limit, timeout, 5xx), fall back to template
+    console.error(&#39;OpenAI API error:&#39;, error);
+    return templateMessage;
+  }
+};
+</code></pre>
+<h3>6.7.4 Sending Logic (Cron Job)</h3>
+<p><strong>Mechanism:</strong> Inngest (preferred) or Vercel Cron Jobs</p>
+<p><strong>Schedule:</strong> Runs daily at 08:00 UTC</p>
+<p><strong>Query:</strong></p>
+<pre><code class="language-sql">SELECT i.*, u.email as user_email, u.name as user_name,
+       c.email as client_email, c.name as client_name
+FROM invoices i
+JOIN users u ON i.user_id = u.id
+JOIN clients c ON i.client_id = c.id
+WHERE i.reminder_enabled = true
+  AND i.reminder_paused = false
+  AND i.status IN (&#39;sent&#39;, &#39;viewed&#39;, &#39;overdue&#39;, &#39;partially_paid&#39;)
+  AND i.next_reminder_date = CURRENT_DATE
+  AND i.current_reminder_step &lt; 4
+</code></pre>
+<p><strong>Per invoice:</strong></p>
+<ol>
+<li>Get the reminder config for the current step</li>
+<li>If AI tone enabled for user → generate AI version</li>
+<li>Send email via Resend with reminder template</li>
+<li>Update reminder record: set sentAt, deliveryStatus = &#39;sent&#39;</li>
+<li>Increment currentReminderStep</li>
+<li>Calculate nextReminderDate = today + reminderFrequencyDays</li>
+<li>If all steps completed → check if legal escalation should be triggered</li>
+</ol>
+<p><strong>Error Recovery:</strong></p>
+<ul>
+<li>Each reminder stores <code>retryCount</code> and <code>errorMessage</code></li>
+<li>If Resend returns an error (not a bounce), retry up to 3 times with exponential backoff (5 min, 15 min, 60 min)</li>
+<li>After 3 failures, set <code>deliveryStatus = &#39;failed&#39;</code>, log error, notify the freelancer via in-app notification</li>
+<li>If email bounces (Resend webhook <code>email.bounced</code>), set <code>deliveryStatus = &#39;bounced&#39;</code>, notify freelancer, pause reminders for that invoice</li>
+<li>Inngest automatically retries failed jobs with configurable backoff</li>
+<li>Dead letter queue: after 5 failures, escalate to admin manual review</li>
+</ul>
+<p><strong>Resend Email Configuration:</strong></p>
+<pre><code class="language-typescript">// lib/email.ts
+import { Resend } from &#39;resend&#39;;
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+export async function sendReminderEmail({
+  to,
+  subject,
+  html,
+  from = &#39;DeathFear &lt;reminders@deathear.app&gt;&#39;,
+  replyTo,
+}: {
+  to: string;
+  subject: string;
+  html: string;
+  from?: string;
+  replyTo?: string;
+}) {
+  const response = await resend.emails.send({
+    from,
+    to: [to],
+    subject,
+    html,
+    replyTo, // Set to freelancer&#39;s email so client replies go to the freelancer
+    tags: [{ name: &#39;category&#39;, value: &#39;reminder&#39; }],
+  });
+
+  return response;
+}
+</code></pre>
+<p><strong>Email Reply Handling:</strong></p>
+<ul>
+<li><code>replyTo</code> is always set to the freelancer&#39;s email address</li>
+<li>When a client replies to a reminder, the email goes directly to the freelancer&#39;s inbox</li>
+<li>DeathFear does NOT intercept or store email replies (out of scope for v1)</li>
+<li>Future: Inbound email parsing via Resend&#39;s inbound email feature to auto-detect &quot;I&#39;ll pay&quot; vs disputes</li>
+</ul>
+<p><strong>Email Tracking:</strong></p>
+<ul>
+<li>Use Resend&#39;s built-in open tracking</li>
+<li>Webhook endpoint <code>/api/webhooks/resend</code> to update deliveryStatus and openedAt</li>
+</ul>
+<h3>6.7.5 Free Plan Enforcement</h3>
+<ul>
+<li>When a Free plan user creates an invoice:<ol>
+<li>Check <code>subscription.invoicesUsedThisMonth</code> against <code>subscription_plan.invoicesPerMonth</code></li>
+<li>If at limit, show a paywall modal: &quot;You&#39;ve used all 3 invoices this month. Upgrade to Premium for unlimited invoices.&quot;</li>
+<li>Options: Upgrade to Premium, or wait until next billing cycle</li>
+</ol>
+</li>
+<li>Invoice count resets monthly via cron job (<code>manageSubscriptions()</code> resets <code>invoicesUsedThisMonth = 0</code> and <code>lastInvoiceResetAt = NOW()</code>)</li>
+<li>Client limit enforced similarly in the &quot;Add Client&quot; flow</li>
+</ul>
+<hr>
+<h2>6.8 Legal Escalation (Premium Feature)</h2>
+<h3>6.8.1 Formal Demand Letter</h3>
+<p><strong>Route:</strong> <code>/app/invoices/[id]/legal</code></p>
+<p><strong>Trigger:</strong> After all 4 reminder steps complete, or user manually triggers</p>
+<p><strong>Pause/Cancel:</strong></p>
+<ul>
+<li>User can <strong>pause</strong> legal escalation at any time (sets status to &quot;paused&quot;, no further letters sent)</li>
+<li>User can <strong>cancel</strong> legal escalation entirely (sets status to &quot;canceled&quot;, removes it from the escalation dashboard)</li>
+<li>Pausing does not delete any already-generated letters — they remain accessible in the timeline</li>
+<li>Canceling does delete draft letters (but not sent ones)</li>
+<li>Both actions are reversible: &quot;resume&quot; unpauses, new trigger restarts canceled escalations</li>
+</ul>
+<p><strong>Content Generation:</strong></p>
+<ul>
+<li>Pre-built template for formal demand letter</li>
+<li>AI-enhanced version available (Premium)</li>
+<li>Include: Invoice details, payment history, warning of legal action, final payment deadline</li>
+</ul>
+<p><strong>Template Structure:</strong></p>
+<pre><code>[Date]
+
+VIA EMAIL
+
+[Client Name]
+[Client Company]
+[Client Email]
+
+Re: FINAL DEMAND FOR PAYMENT — Invoice [Number]
+
+Dear [Client Name],
+
+This letter serves as a formal demand for payment of the outstanding balance of [Amount] for services rendered as detailed in Invoice [Number], dated [Invoice Date].
+
+Despite multiple reminders sent on [list dates], the amount remains unpaid and is now [Days] days past due.
+
+UNLESS PAYMENT IS RECEIVED IN FULL within 7 calendar days from the date of this letter, we will take the following actions without further notice:
+
+1. File a claim in [State/County] Small Claims Court
+2. Report this debt to credit reporting agencies
+3. Pursue all available legal remedies to collect the amount owed
+
+We prefer to resolve this matter amicably, but we are prepared to pursue all legal options if necessary.
+
+Please remit payment via [payment methods] immediately.
+
+Sincerely,
+
+[Sender Name]
+[Sender Company]
+</code></pre>
+<h3>6.8.2 Small Claims Filing Guide</h3>
+<p><strong>Route:</strong> <code>/app/invoices/[id]/legal</code></p>
+<p><strong>Pre-built Legal Templates Storage:</strong></p>
+<ul>
+<li>A JSON file <code>data/small-claims-data.json</code> bundled with the app contains jurisdiction data</li>
+<li>Structure:</li>
+</ul>
+<pre><code class="language-json">{
+  &quot;USA&quot;: {
+    &quot;Alabama&quot;: {
+      &quot;maxClaimAmount&quot;: 6000,
+      &quot;filingFee&quot;: 99,
+      &quot;courtName&quot;: &quot;Alabama Small Claims Court&quot;,
+      &quot;formName&quot;: &quot;Statement of Claim (Small Claims)&quot;,
+      &quot;formUrl&quot;: &quot;https://...&quot;,
+      &quot;serverOptions&quot;: [&quot;Certified Mail&quot;, &quot;Sheriff&quot;],
+      &quot;notes&quot;: &quot;No attorney required. 30-day appeal window.&quot;
+    },
+    ...
+  },
+  &quot;UK&quot;: { ... },
+  &quot;Canada&quot;: { ... },
+  &quot;Australia&quot;: { ... }
+}
+</code></pre>
+<ul>
+<li>This file is created manually by the DeathFear team pre-launch (or populated via a legal data API in v2)</li>
+</ul>
+<p><strong>Generation:</strong></p>
+<ul>
+<li>User inputs: State/Country, amount owed, client&#39;s location</li>
+<li>System generates jurisdiction-specific guide</li>
+</ul>
+<p><strong>Scope &amp; Limitations (v1):</strong></p>
+<ul>
+<li><strong>Supported jurisdictions:</strong> USA (all 50 states + DC), UK, Canada (by province), Australia (by state)</li>
+<li><strong>Generation method:</strong> Pre-written templates with state-specific variable insertion (filing fees, court names, form names) — NOT AI-generated legal advice</li>
+<li><strong>Disclaimer displayed on every guide:</strong> &quot;This guide is for informational purposes only and does not constitute legal advice. Consult with a licensed attorney for advice specific to your situation.&quot; This disclaimer is also shown on the legal escalation page itself, not just the generated document.</li>
+<li><strong>Unsupported jurisdictions:</strong> Show message: &quot;Small claims guide is not yet available for your jurisdiction. We recommend consulting with a local attorney.&quot;</li>
+<li>Future: Partner with legal APIs for live jurisdiction data</li>
+</ul>
+<p><strong>Guide Sections:</strong></p>
+<ol>
+<li>Eligibility Check — Amount thresholds for small claims (state-specific)</li>
+<li>Court Locator — Nearest small claims court (based on zip/postal code)</li>
+<li>Required Forms — List with links to official court websites</li>
+<li>Filing Instructions — Step-by-step (generalized per state)</li>
+<li>Serving the Defendant — Process options per state</li>
+<li>Court Date Preparation — What to bring (checklist)</li>
+<li>Judgment Enforcement — If you win, next steps</li>
+</ol>
+<hr>
+<h2>6.9 Subscription &amp; Billing</h2>
+<h3>6.9.1 Subscription Plans</h3>
+<p><strong>Free Plan (no trial — always free):</strong></p>
+<ul>
+<li>3 invoices per month</li>
+<li>5 clients tracked</li>
+<li>Basic reminder templates (no AI)</li>
+<li>Email support</li>
+<li>All 4 tones available with pre-written templates</li>
+</ul>
+<p><strong>Premium Plan (no trial — paid from day 1):</strong></p>
+<ul>
+<li>Free plan users can upgrade to Premium at any time</li>
+<li>No free trial period in v1 (simplifies billing). Future: 7-day free trial for Premium.</li>
+<li>Unlimited invoices</li>
+<li>Unlimited clients</li>
+<li>AI tone adaptation</li>
+<li>Legal escalation (demand letters + small claims guides)</li>
+<li>Priority support</li>
+<li>Analytics &amp; reporting</li>
+</ul>
+<p><strong>Pricing (configurable via admin):</strong></p>
+<ul>
+<li>Free: $0/month</li>
+<li>Premium Monthly: $19/month</li>
+<li>Premium Annual: $190/year (save ~$38)</li>
+<li><strong>Multi-currency:</strong> v1 is USD-only. All prices, amounts, and invoices use USD. Future versions may add multi-currency.</li>
+</ul>
+<h3>6.9.2 Subscription Flow</h3>
+<p><strong>Route:</strong> <code>/app/subscribe</code></p>
+<ol>
+<li>User sees plan comparison</li>
+<li>Selects Premium → Monthly or Annual</li>
+<li>Payment method selection: Credit Card (Stripe), PayPal, UPI AutoPay</li>
+<li>If Stripe → hosted Checkout page</li>
+<li>If PayPal → PayPal billing agreement flow</li>
+<li>If UPI → Razorpay UPI AutoPay (eMandate) flow</li>
+<li>Webhook handles subscription creation</li>
+<li>User redirected to <code>/app/dashboard</code> with success toast</li>
+</ol>
+<h3>6.9.3 UPI Integration (Razorpay AutoPay / eMandate)</h3>
+<p><strong>Provider:</strong> Razorpay</p>
+<p><strong>Important:</strong> Recurring subscriptions via UPI require <strong>eMandate (AutoPay)</strong>, NOT one-time UPI payments.</p>
+<p><strong>Flow:</strong></p>
+<ol>
+<li>Freelancer selects &quot;UPI AutoPay&quot; as payment method</li>
+<li>Razorpay creates a subscription with <code>plan_id</code> (monthly or annual)</li>
+<li>Freelancer enters UPI ID (e.g., <code>user@paytm</code> or <code>user@upi</code>)</li>
+<li>Razorpay initiates eMandate — freelancer authorizes recurring debit</li>
+<li>On first successful payment → subscription activated</li>
+<li>Monthly/Annual recurring payments happen automatically via UPI AutoPay</li>
+<li>Webhook <code>subscription.charged</code> and <code>subscription.completed</code> events handled by <code>/api/webhooks/razorpay</code></li>
+<li>If payment fails → subscription.status = &quot;past_due&quot; → retry logic (3 attempts, 48h apart) → if all fail, cancel subscription</li>
+</ol>
+<p><strong>UI:</strong></p>
+<ul>
+<li>UPI ID input field with validation</li>
+<li>Status indicator during mandate setup</li>
+<li>Link to Razorpay&#39;s hosted page for mandate authorization if direct UPI fails</li>
+</ul>
+<h3>6.9.4 Subscription Transitions</h3>
+<p><strong>Free → Premium Upgrade:</strong></p>
+<ol>
+<li>All existing data (invoices, clients, tone samples, reminders) remains intact</li>
+<li>Invoice and client limits are lifted immediately upon successful payment</li>
+<li>AI tone adaptation is unlocked — existing tone samples become usable</li>
+<li>Legal escalation is unlocked — existing overdue invoices can trigger escalation</li>
+<li>No data migration needed — simply update the user&#39;s <code>planId</code> and set <code>status = &#39;active&#39;</code></li>
+<li>Proration: For mid-cycle upgrades, charge the full Premium monthly price (no proration in v1 to keep billing simple). The user can cancel within 7 days for a full refund.</li>
+</ol>
+<p><strong>Premium → Free Downgrade (user-initiated or due to payment failure):</strong></p>
+<ol>
+<li>At end of current billing period, switch plan. No immediate downgrade (user keeps Premium until period ends).</li>
+<li>When downgrade takes effect:<ul>
+<li>AI tone adaptation disabled (existing AI-generated reminders stay in place, but new ones use templates)</li>
+<li>Legal escalation disabled (active escalations are paused, not deleted)</li>
+<li>Invoice and client counts are checked against Free limits</li>
+<li>If user exceeds Free limits: they can still view existing invoices/clients, but cannot create new ones until under the limit</li>
+<li>In-app notification: &quot;Your plan has been downgraded to Free. Some features are now limited.&quot;</li>
+</ul>
+</li>
+<li><strong>Payment failure handling:</strong> Retry logic runs for 7 days (3 attempts: day 1, day 3, day 7). After all failures fail, subscription is moved to <code>canceled</code> status and the downgrade flow above is triggered.</li>
+</ol>
+<p><strong>Monthly → Annual (or vice versa):</strong></p>
+<ol>
+<li>User switches billing interval in subscription settings</li>
+<li>For Monthly → Annual: charge the annual price after confirming. New billing cycle starts.</li>
+<li>For Annual → Monthly: the annual subscription remains active until the end of the paid period, then switches to monthly</li>
+<li>Proration: Not supported in v1. The switch happens at the next billing cycle.</li>
+</ol>
+<h2>6.10 Settings</h2>
+<p><strong>Route:</strong> <code>/app/settings</code></p>
+<h3>Sections:</h3>
+<ol>
+<li><p><strong>Profile</strong></p>
+<ul>
+<li>Name, email (verified, change triggers verification)</li>
+<li>Avatar upload (max 2MB, PNG/JPG/WebP, recommended 256×256px)</li>
+<li>Company name, website</li>
+</ul>
+</li>
+<li><p><strong>Tone Samples</strong> (Premium)</p>
+<ul>
+<li>List of saved writing samples</li>
+<li>Add new sample (textarea, max 2000 characters)</li>
+<li>&quot;Use my tone for all reminders&quot; toggle</li>
+<li>Test tone button: &quot;Generate sample reminder with my voice&quot;</li>
+</ul>
+</li>
+<li><p><strong>Reminder Defaults</strong></p>
+<ul>
+<li>Default reminder schedule (days between reminders)</li>
+<li>Default tone progression order</li>
+<li>Default enable/disable</li>
+<li>Quiet hours (don&#39;t send between X and Y)</li>
+</ul>
+</li>
+<li><p><strong>Invoice Settings</strong></p>
+<ul>
+<li>Default payment terms</li>
+<li>Default currency (USD only in v1)</li>
+<li>Invoice number prefix (default: &quot;DF&quot;)</li>
+<li>Logo upload (max 5MB, PNG/SVG preferred, max 512×512px)</li>
+</ul>
+</li>
+<li><p><strong>Notifications</strong></p>
+<ul>
+<li>Email me when: Invoice paid, Reminder bounces, Client opens invoice, Subscription renews</li>
+<li>Digest frequency: Instant, Daily, Weekly</li>
+</ul>
+</li>
+<li><p><strong>Billing</strong></p>
+<ul>
+<li>Current plan display</li>
+<li>Upgrade / Downgrade / Cancel</li>
+<li>Payment history</li>
+<li>Download invoices/receipts</li>
+</ul>
+</li>
+<li><p><strong>API Keys</strong> (Future, scaffold UI)</p>
+<ul>
+<li>Create/manage API keys for integrations</li>
+</ul>
+</li>
+</ol>
+<h2>6.11 Admin Dashboard</h2>
+<p><strong>Route:</strong> <code>/admin</code> (role-protected, <code>user.role === &#39;admin&#39;</code> check in middleware)</p>
+<p><strong>Access Control:</strong></p>
+<ul>
+<li><code>/admin/*</code> layout checks <code>session.user.role === &#39;admin&#39;</code></li>
+<li>If non-admin user tries to access: redirect to <code>/app/dashboard</code> with error toast &quot;Access denied&quot;</li>
+<li>API routes also check role server-side (never trust client-side checks alone)</li>
+</ul>
+<h3>Sections:</h3>
+<ol>
+<li><p><strong>Overview</strong></p>
+<ul>
+<li>Total users (Free vs Premium)</li>
+<li>MRR (Monthly Recurring Revenue)</li>
+<li>Invoices created/sent/paid (aggregate)</li>
+<li>Emails sent today/this month</li>
+<li>Failed cron jobs requiring manual review (dead letter queue count)</li>
+</ul>
+</li>
+<li><p><strong>Users</strong></p>
+<ul>
+<li>Table: Name, Email, Plan, Status, Joined date, Role</li>
+<li>Actions: View, Impersonate (dev only), Suspend, Delete, Change role (promote to admin / demote to user)</li>
+<li>Search + filters</li>
+</ul>
+</li>
+<li><p><strong>Subscriptions</strong></p>
+<ul>
+<li>Table: User, Plan, Status, Next billing date, Payment provider</li>
+<li>Manual subscription management: force cancel, refund, extend trial</li>
+</ul>
+</li>
+<li><p><strong>Plans</strong></p>
+<ul>
+<li>CRUD for subscription_plans table</li>
+<li>Edit pricing, features, limits</li>
+<li>Preview changes before saving</li>
+</ul>
+</li>
+<li><p><strong>Email Logs</strong></p>
+<ul>
+<li>Table: notification_logs</li>
+<li>Filter by user, type, status</li>
+<li>View email body</li>
+<li>Search by email address</li>
+</ul>
+</li>
+<li><p><strong>Failed Jobs</strong> (dead letter queue)</p>
+<ul>
+<li>List failed cron jobs with error details</li>
+<li>Retry / Dismiss buttons</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h1>7. API ROUTE DESIGN</h1>
+<h2>7.1 Route Structure</h2>
+<pre><code>/api/auth/*          — NextAuth.js (automatic)
+/api/webhooks/stripe — Stripe webhook handler
+/api/webhooks/paypal — PayPal webhook handler
+/api/webhooks/razorpay — Razorpay webhook handler
+/api/webhooks/resend — Resend webhook (email tracking)
+
+/api/invoices
+  GET    /api/invoices          — List user&#39;s invoices (paginated, filterable)
+  POST   /api/invoices          — Create invoice
+  GET    /api/invoices/[id]     — Get invoice detail
+  PUT    /api/invoices/[id]     — Update invoice
+  DELETE /api/invoices/[id]     — Delete invoice
+  POST   /api/invoices/[id]/send        — Send invoice
+  POST   /api/invoices/[id]/mark-paid   — Mark as paid (supports partial)
+  POST   /api/invoices/[id]/send-reminder — Send custom reminder
+  GET    /api/invoices/[id]/pdf         — Generate/download PDF
+
+/api/clients
+  GET    /api/clients           — List user&#39;s clients
+  POST   /api/clients           — Create client
+  GET    /api/clients/[id]      — Get client detail
+  PUT    /api/clients/[id]      — Update client
+  DELETE /api/clients/[id]      — Delete client
+
+/api/reminders
+  POST   /api/reminders/generate-ai — Generate AI tone version
+  PUT    /api/reminders/[id]        — Update reminder message
+  POST   /api/reminders/[id]/pause  — Pause reminder sequence
+  POST   /api/reminders/[id]/resume — Resume reminder sequence
+
+/api/legal
+  POST   /api/legal/generate-letter   — Generate formal demand letter
+  POST   /api/legal/generate-guide    — Generate small claims guide
+  GET    /api/legal/[invoiceId]       — Get legal escalation status
+
+/api/subscriptions
+  GET    /api/subscriptions/plans      — List available plans
+  POST   /api/subscriptions/create     — Create checkout session
+  GET    /api/subscriptions/current    — Get current subscription
+  POST   /api/subscriptions/cancel     — Cancel subscription
+  POST   /api/subscriptions/update     — Change plan/interval
+
+/api/settings
+  GET    /api/settings            — Get user settings
+  PUT    /api/settings            — Update user settings
+  POST   /api/settings/tone-sample — Add tone sample
+  DELETE /api/settings/tone-sample/[id] — Remove tone sample
+
+/api/admin
+  GET    /api/admin/stats           — Dashboard statistics
+  GET    /api/admin/users           — List all users
+  PUT    /api/admin/users/[id]      — Update user (suspend, change role, etc.)
+  GET    /api/admin/plans           — List subscription plans
+  POST   /api/admin/plans           — Create/update plan
+  GET    /api/admin/email-logs      — View email logs
+  GET    /api/admin/failed-jobs     — View dead letter queue
+  POST   /api/admin/failed-jobs/[id]/retry — Retry failed job
+
+# Client-facing (no auth)
+/api/share/[token]     — Get invoice data by share token (public)
+</code></pre>
+<h2>7.2 API Response Format</h2>
+<pre><code class="language-typescript">// Success response
+{
+  &quot;success&quot;: true,
+  &quot;data&quot;: { ... },
+  &quot;meta&quot;: { &quot;page&quot;: 1, &quot;perPage&quot;: 10, &quot;total&quot;: 42 } // for paginated
+}
+
+// Error response
+{
+  &quot;success&quot;: false,
+  &quot;error&quot;: {
+    &quot;code&quot;: &quot;INVOICE_NOT_FOUND&quot;,
+    &quot;message&quot;: &quot;The invoice with the provided ID was not found.&quot;
+  }
+}
+</code></pre>
+<h2>7.3 Authentication</h2>
+<p>All <code>/api/*</code> routes (except auth, webhooks, and public /api/share/* endpoints) require authentication.</p>
+<pre><code class="language-typescript">// middleware.ts
+export { auth as middleware } from &quot;@/auth&quot;;
+export const config = {
+  matcher: [&quot;/api/:path*&quot;, &quot;/app/:path*&quot;],
+};
+</code></pre>
+<h2>7.4 Rate Limiting</h2>
+<table>
+<thead>
+<tr>
+<th>Endpoint Group</th>
+<th>Limit</th>
+<th>Window</th>
+<th>Scope</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Standard API (<code>/api/invoices/*</code>, <code>/api/clients/*</code>, etc.)</td>
+<td>100 req/min</td>
+<td>1 minute</td>
+<td>Per user</td>
+</tr>
+<tr>
+<td>AI Generation (<code>/api/reminders/generate-ai</code>)</td>
+<td>10 req/min</td>
+<td>1 minute</td>
+<td>Per user</td>
+</tr>
+<tr>
+<td>Auth endpoints (<code>/api/auth/*</code>)</td>
+<td>5 req/15min</td>
+<td>15 minutes</td>
+<td>Per email</td>
+</tr>
+<tr>
+<td>Share endpoints (<code>/api/share/*</code>)</td>
+<td>30 req/min</td>
+<td>1 minute</td>
+<td>Per IP</td>
+</tr>
+<tr>
+<td>Webhooks (<code>/api/webhooks/*</code>)</td>
+<td>Unrestricted</td>
+<td>—</td>
+<td>IP whitelist</td>
+</tr>
+</tbody></table>
+<p><strong>Implementation:</strong> Vercel KV + Upstash Ratelimit or a simple in-memory map with token bucket.</p>
+<pre><code class="language-typescript">// lib/rate-limit.ts
+import { Ratelimit } from &quot;@upstash/ratelimit&quot;;
+import { Redis } from &quot;@upstash/redis&quot;;
+
+export const standardApi = new Ratelimit({
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.slidingWindow(100, &quot;1 m&quot;),
+  analytics: true,
+  prefix: &quot;ratelimit:standard&quot;,
+});
+
+export const aiApi = new Ratelimit({
+  redis: Redis.fromEnv(),
+  limiter: Ratelimit.slidingWindow(10, &quot;1 m&quot;),
+  analytics: true,
+  prefix: &quot;ratelimit:ai&quot;,
+});
+</code></pre>
+<hr>
+<h1>8. EMAIL TEMPLATES (React Email)</h1>
+<p>All emails sent via Resend with React Email templates. Templates use Tailwind-compatible React Email components.</p>
+<h2>8.1 Invoice Sent</h2>
+<p><strong>To:</strong> Client
+<strong>Subject:</strong> Invoice {invoiceNumber} from {senderName}
+<strong>Template Components:</strong></p>
+<ul>
+<li>Container with DeathFear header branding</li>
+<li>&quot;Hi {clientName}&quot; greeting</li>
+<li>Invoice summary card: Invoice #, Amount, Due Date, Status</li>
+<li>&quot;View Invoice&quot; button (links to <code>/invoice/{token}</code>)</li>
+<li>Payment instructions text</li>
+<li>Footer with sender details</li>
+</ul>
+<p><strong>React Email Component (structure):</strong></p>
+<pre><code class="language-tsx">// emails/invoice-sent.tsx
+export const InvoiceSentEmail = ({
+  clientName,
+  invoiceNumber,
+  amount,
+  dueDate,
+  senderName,
+  invoiceUrl,
+}: {
+  clientName: string;
+  invoiceNumber: string;
+  amount: string;
+  dueDate: string;
+  senderName: string;
+  invoiceUrl: string;
+}) =&gt; (
+  &lt;Html&gt;
+    &lt;Head /&gt;
+    &lt;Preview&gt;Invoice {invoiceNumber} from {senderName}&lt;/Preview&gt;
+    &lt;Body&gt;
+      &lt;Container&gt;
+        &lt;Heading&gt;Invoice from {senderName}&lt;/Heading&gt;
+        &lt;Text&gt;Hi {clientName},&lt;/Text&gt;
+        &lt;Text&gt;You&#39;ve received a new invoice:&lt;/Text&gt;
+        &lt;Card&gt;
+          &lt;Row&gt;&lt;strong&gt;Invoice:&lt;/strong&gt; {invoiceNumber}&lt;/Row&gt;
+          &lt;Row&gt;&lt;strong&gt;Amount:&lt;/strong&gt; {amount}&lt;/Row&gt;
+          &lt;Row&gt;&lt;strong&gt;Due Date:&lt;/strong&gt; {dueDate}&lt;/Row&gt;
+        &lt;/Card&gt;
+        &lt;Button href={invoiceUrl}&gt;View Invoice&lt;/Button&gt;
+        &lt;Text&gt;Or copy this link: {invoiceUrl}&lt;/Text&gt;
+        &lt;Hr /&gt;
+        &lt;Text&gt;Sent via DeathFear&lt;/Text&gt;
+      &lt;/Container&gt;
+    &lt;/Body&gt;
+  &lt;/Html&gt;
+);
+</code></pre>
+<h2>8.2 Reminder Email</h2>
+<p><strong>To:</strong> Client
+<strong>Subject:</strong> Dynamic based on tone
+<strong>Template Components:</strong></p>
+<ul>
+<li>Header with DeathFear branding + escalation indicator (Step X/4)</li>
+<li>Reminder message body (dynamic, AI or template)</li>
+<li>Invoice summary card</li>
+<li>&quot;View Invoice&quot; button (links to <code>/invoice/{token}</code>)</li>
+<li>Payment link/button (if using Stripe Payment Links or future payment collection)</li>
+<li>Footer: &quot;Sent via DeathFear on behalf of {senderName}. Replies go directly to {senderEmail}.&quot;</li>
+</ul>
+<h2>8.3 Payment Confirmation</h2>
+<p><strong>To:</strong> Freelancer
+<strong>Subject:</strong> Payment received — Invoice {invoiceNumber}
+<strong>Content:</strong> {clientName} has paid {amount} of {totalAmount}. View receipt.
+<strong>Components:</strong></p>
+<ul>
+<li>Green success indicator</li>
+<li>Amount paid, remaining balance (if partial)</li>
+<li>&quot;View Invoice&quot; button → <code>/app/invoices/[id]</code></li>
+<li>&quot;Send Thank You&quot; quick action button (opens compose)</li>
+</ul>
+<h2>8.4 Invoice Viewed</h2>
+<p><strong>To:</strong> Freelancer
+<strong>Subject:</strong> {clientName} viewed invoice {invoiceNumber}
+<strong>Content:</strong> Your client opened invoice {invoiceNumber}. They&#39;re on it!
+<strong>Components:</strong></p>
+<ul>
+<li>Status indicator: viewed</li>
+<li>Open time</li>
+<li>&quot;View Invoice&quot; button → <code>/app/invoices/[id]</code></li>
+</ul>
+<h2>8.5 Subscription Notifications</h2>
+<p><strong>To:</strong> Freelancer
+<strong>Subjects:</strong></p>
+<ul>
+<li>&quot;Welcome to DeathFear Premium!&quot; (with getting started checklist)</li>
+<li>&quot;Your DeathFear subscription has been renewed&quot; (with receipt link)</li>
+<li>&quot;Your DeathFear trial ends in 3 days&quot; (with upgrade CTA)</li>
+<li>&quot;Your subscription has been canceled&quot; (with survey link)</li>
+<li>&quot;Payment failed — update your billing information&quot; (with retry link)</li>
+</ul>
+<h2>8.6 Email Bounce Notification</h2>
+<p><strong>To:</strong> Freelancer
+<strong>Subject:</strong> Reminder email bounced for {clientName}
+<strong>Content:</strong> The reminder for invoice {invoiceNumber} was not delivered to {clientEmail}. This usually means the email address is invalid or the recipient&#39;s server rejected it.
+<strong>Actions:</strong> Update client email, pause reminders, retry</p>
+<hr>
+<h1>9. ERROR BOUNDARIES</h1>
+<p>All app routes must have Next.js error boundaries to prevent full-page crashes:</p>
+<ul>
+<li><strong><code>/app/(dashboard)/error.tsx</code></strong> — Dashboard-wide error boundary. Shows &quot;Something went wrong on our end. We&#39;re on it.&quot; with retry button + link to dashboard.</li>
+<li><strong><code>/app/(dashboard)/invoices/error.tsx</code></strong> — Invoices section error boundary.</li>
+<li><strong><code>/app/(dashboard)/clients/error.tsx</code></strong> — Clients section error boundary.</li>
+<li><strong><code>/admin/error.tsx</code></strong> — Admin section error boundary (different message: &quot;Admin panel error. Contact support.&quot;).</li>
+<li><strong>Global 404 (<code>/not-found.tsx</code>)</strong> — Custom 404 page with DeathFear branding.</li>
+</ul>
+<p>Each error boundary:</p>
+<ol>
+<li>Logs the error via <code>console.error</code> (or Sentry in production)</li>
+<li>Shows a user-friendly message (no stack traces to users)</li>
+<li>Provides a &quot;Try again&quot; button that calls <code>reset()</code></li>
+<li>After 3 consecutive errors, shows &quot;This keeps failing. Go back to dashboard.&quot; link instead of retry button</li>
+</ol>
+<hr>
+<h1>9. UI / UX SPECIFICATIONS</h1>
+<h2>9.1 Design System</h2>
+<p><strong>Colors:</strong></p>
+<pre><code class="language-css">--primary: 262 83% 58%;      /* Purple (#8B5CF6) — Bold, confident */
+--primary-foreground: 0 0% 100%;
+--secondary: 220 14% 96%;     /* Light gray */
+--destructive: 0 84% 60%;     /* Red for overdue/errors */
+--success: 142 71% 45%;       /* Green for paid */
+--warning: 38 92% 50%;        /* Amber for warnings */
+--background: 0 0% 100%;
+--foreground: 220 10% 10%;
+--muted: 220 14% 96%;
+--muted-foreground: 220 9% 46%;
+--card: 0 0% 100%;
+--card-foreground: 220 10% 10%;
+--border: 220 13% 91%;
+--ring: 262 83% 58%;
+</code></pre>
+<p><strong>Typography:</strong></p>
+<ul>
+<li>Font: Inter (sans-serif)</li>
+<li>Headings: Inter Semi-Bold</li>
+<li>Body: Inter Regular</li>
+<li>Monospace: JetBrains Mono (for code/dollar amounts)</li>
+</ul>
+<p><strong>Spacing:</strong></p>
+<ul>
+<li>Base unit: 4px</li>
+<li>Consistent padding: p-6 for page content</li>
+</ul>
+<p><strong>Dark Mode:</strong> Optional, use next-themes with Toggle in settings</p>
+<p><strong>Brand Voice in UI:</strong></p>
+<ul>
+<li>Copy is empathetic and direct: &quot;We&#39;ve got your back&quot; not &quot;Our platform empowers&quot;</li>
+<li>Error messages are human: &quot;Something went wrong on our end. We&#39;re on it.&quot; not &quot;Error 500 occurred&quot;</li>
+<li>Empty states are encouraging: &quot;No invoices yet. Let&#39;s create your first one →&quot; with illustration</li>
+</ul>
+<h2>9.2 Component Library</h2>
+<p>Use shadcn/ui components:</p>
+<ul>
+<li>Button (variants: default, secondary, destructive, outline, ghost, link)</li>
+<li>Card</li>
+<li>Input</li>
+<li>Select</li>
+<li>Textarea</li>
+<li>Table</li>
+<li>Badge (variants for status)</li>
+<li>Dialog / Modal</li>
+<li>Dropdown Menu</li>
+<li>Popover</li>
+<li>Sheet (mobile sidebar)</li>
+<li>Tabs</li>
+<li>Toast / Sonner</li>
+<li>Avatar</li>
+<li>Skeleton (loading states)</li>
+</ul>
+<h2>9.3 Animations &amp; Micro-interactions</h2>
+<ul>
+<li>Page transitions: Framer Motion fade + slide</li>
+<li>Button hover: scale(1.02) + shadow</li>
+<li>Card hover: subtle lift + border highlight</li>
+<li>Toast notifications: slide in from top-right</li>
+<li>Loading skeletons: shimmer animation</li>
+<li>Status badge: color transition on change</li>
+<li>Sidebar collapse: smooth width transition</li>
+</ul>
+<h2>9.4 Responsive Breakpoints</h2>
+<table>
+<thead>
+<tr>
+<th>Breakpoint</th>
+<th>Width</th>
+<th>Layout</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Mobile</td>
+<td>&lt; 640px</td>
+<td>Single column, bottom nav or hamburger</td>
+</tr>
+<tr>
+<td>Tablet</td>
+<td>640–1024px</td>
+<td>Sidebar collapsed, 2-column grids</td>
+</tr>
+<tr>
+<td>Desktop</td>
+<td>&gt; 1024px</td>
+<td>Full sidebar, multi-column grids</td>
+</tr>
+</tbody></table>
+<h2>9.5 Accessibility (WCAG 2.1 AA)</h2>
+<p><strong>Minimum Compliance Standards:</strong></p>
+<ul>
+<li><strong>Color contrast:</strong> All text meets WCAG AA ratio (4.5:1 for normal text, 3:1 for large text)</li>
+<li><strong>Keyboard navigation:</strong> All interactive elements reachable and operable via keyboard (Tab, Enter, Escape)</li>
+<li><strong>Focus indicators:</strong> Visible focus rings on all interactive elements (use shadcn/ui&#39;s built-in ring styles)</li>
+<li><strong>Screen reader support:</strong><ul>
+<li>All icons have <code>aria-hidden=&quot;true&quot;</code> and text labels where needed</li>
+<li>Forms have proper <code>&lt;label&gt;</code> elements (not placeholders as labels)</li>
+<li>Dynamic content updates use <code>aria-live</code> regions</li>
+<li>Status changes (e.g., &quot;Invoice sent&quot;) announced via <code>role=&quot;status&quot;</code></li>
+</ul>
+</li>
+<li><strong>Semantic HTML:</strong> Use proper heading hierarchy (h1 &gt; h2 &gt; h3), <code>&lt;nav&gt;</code>, <code>&lt;main&gt;</code>, <code>&lt;aside&gt;</code></li>
+<li><strong>Error announcements:</strong> Form errors use <code>aria-describedby</code> to associate error messages with inputs</li>
+<li><strong>Skip to content:</strong> Hidden &quot;Skip to main content&quot; link at top of each page</li>
+<li><strong>Testing:</strong> Run axe DevTools on all pages before shipping</li>
+</ul>
+<hr>
+<h1>10. ERROR HANDLING</h1>
+<h2>10.1 User-Facing Errors</h2>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>Message</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Network error</td>
+<td>&quot;Something went wrong. Please try again.&quot;</td>
+<td>Retry button</td>
+</tr>
+<tr>
+<td>Payment failed</td>
+<td>&quot;Payment was declined. Please try a different payment method.&quot;</td>
+<td>Change method button</td>
+</tr>
+<tr>
+<td>Invoice not found</td>
+<td>&quot;Invoice not found. It may have been deleted.&quot;</td>
+<td>Go back button</td>
+</tr>
+<tr>
+<td>Rate limited</td>
+<td>&quot;Too many attempts. Please try again in {minutes}.&quot;</td>
+<td>Timer countdown</td>
+</tr>
+<tr>
+<td>Subscription expired</td>
+<td>&quot;Your subscription has expired. Renew to continue using premium features.&quot;</td>
+<td>Renew button</td>
+</tr>
+<tr>
+<td>Free plan limit</td>
+<td>&quot;You&#39;ve hit the free plan limit. Upgrade for unlimited access.&quot;</td>
+<td>Upgrade button</td>
+</tr>
+<tr>
+<td>Validation error</td>
+<td>Inline field errors with specific messages</td>
+<td>Field highlight</td>
+</tr>
+<tr>
+<td>Email bounced</td>
+<td>&quot;This email address appears to be invalid. Please check and update.&quot;</td>
+<td>Edit client button</td>
+</tr>
+<tr>
+<td>Premium feature on free plan</td>
+<td>&quot;This feature requires a Premium plan.&quot;</td>
+<td>Upgrade button + feature highlight</td>
+</tr>
+</tbody></table>
+<h2>10.2 Backend Error Codes</h2>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>HTTP Status</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>UNAUTHORIZED</td>
+<td>401</td>
+<td>Not authenticated</td>
+</tr>
+<tr>
+<td>FORBIDDEN</td>
+<td>403</td>
+<td>Not authorized for this action</td>
+</tr>
+<tr>
+<td>NOT_FOUND</td>
+<td>404</td>
+<td>Resource not found</td>
+</tr>
+<tr>
+<td>VALIDATION_ERROR</td>
+<td>422</td>
+<td>Input validation failed</td>
+</tr>
+<tr>
+<td>RATE_LIMITED</td>
+<td>429</td>
+<td>Too many requests</td>
+</tr>
+<tr>
+<td>INTERNAL_ERROR</td>
+<td>500</td>
+<td>Unexpected server error</td>
+</tr>
+<tr>
+<td>PAYMENT_REQUIRED</td>
+<td>402</td>
+<td>Premium feature on free plan</td>
+</tr>
+<tr>
+<td>CONFLICT</td>
+<td>409</td>
+<td>Duplicate resource</td>
+</tr>
+<tr>
+<td>PLAN_LIMIT_EXCEEDED</td>
+<td>403</td>
+<td>Free plan limit reached (invoices/clients)</td>
+</tr>
+<tr>
+<td>PAYMENT_FAILED</td>
+<td>402</td>
+<td>Payment processing failed</td>
+</tr>
+</tbody></table>
+<hr>
+<h1>11. BACKGROUND JOBS / CRON</h1>
+<h2>11.1 Daily Reminder Check</h2>
+<p><strong>Schedule:</strong> Every day at 08:00 UTC
+<strong>Engine:</strong> Inngest (with automatic retries + observability)
+<strong>Function:</strong> <code>checkAndSendReminders()</code>
+<strong>What it does:</strong></p>
+<ol>
+<li>Query all invoices where nextReminderDate = today AND reminderEnabled = true AND reminderPaused = false</li>
+<li>For each, generate reminder (AI or template)</li>
+<li>Send email via Resend</li>
+<li>Update reminder status</li>
+<li>Increment step count, calculate next date</li>
+<li>Log in notification_logs</li>
+<li>On failure: retry up to 3 times with exponential backoff, then move to dead letter queue</li>
+</ol>
+<h2>11.2 Invoice Status Auto-Update</h2>
+<p><strong>Schedule:</strong> Every day at 00:00 UTC
+<strong>Function:</strong> <code>updateOverdueInvoices()</code>
+<strong>What it does:</strong></p>
+<ol>
+<li>Query all invoices where dueDate &lt; today AND status = &#39;sent&#39;</li>
+<li>Update status to &#39;overdue&#39;</li>
+<li>If no reminder sent yet, schedule first reminder</li>
+</ol>
+<h2>11.3 Subscription Management</h2>
+<p><strong>Schedule:</strong> Every hour
+<strong>Function:</strong> <code>manageSubscriptions()</code>
+<strong>What it does:</strong></p>
+<ol>
+<li>Check for subscriptions about to expire (notify at 7, 3, 1 days before)</li>
+<li>Check for failed payments (past_due status, notify user, retry logic)</li>
+<li>Clean up incomplete/expired subscriptions (&gt; 30 days in incomplete status)</li>
+<li>Reset invoice counts for Free plan users (monthly — set invoicesUsedThisMonth = 0)</li>
+</ol>
+<h2>11.4 Partial Payment Reminder Resume</h2>
+<p><strong>Schedule:</strong> Every day at 00:00 UTC
+<strong>Function:</strong> <code>resumePausedReminders()</code>
+<strong>What it does:</strong></p>
+<ol>
+<li>Find invoices where reminderPaused = true AND updatedAt &lt; 14 days ago</li>
+<li>Set reminderPaused = false (auto-resume reminders after 14-day grace period)</li>
+<li>Notify freelancer: &quot;Reminders have resumed for invoice {number}&quot;</li>
+</ol>
+<h2>11.5 Email Delivery Tracking</h2>
+<p><strong>Trigger:</strong> Webhook from Resend
+<strong>Function:</strong> <code>handleResendWebhook(event)</code>
+<strong>What it does:</strong></p>
+<ol>
+<li>Update reminder deliveryStatus based on event type</li>
+<li>Update openedAt when email_opened event received</li>
+<li>Handle bounced emails:<ul>
+<li>Set deliveryStatus = &#39;bounced&#39;</li>
+<li>Log error in notification_logs</li>
+<li>Set invoice.reminderPaused = true</li>
+<li>Notify freelancer with bounce notification</li>
+</ul>
+</li>
+<li>Handle complaints (spam reports):<ul>
+<li>Immediately pause all reminders for that invoice</li>
+<li>Notify freelancer urgently</li>
+</ul>
+</li>
+</ol>
+<h2>11.6 Error Recovery &amp; Dead Letter Queue</h2>
+<p><strong>Storage:</strong> <code>failed_jobs</code> table or Inngest built-in dead letter queue</p>
+<pre><code class="language-sql">CREATE TABLE failed_jobs (
+  id UUID PRIMARY KEY,
+  job_type VARCHAR(100) NOT NULL,
+  payload JSONB NOT NULL,
+  error_message TEXT NOT NULL,
+  error_stack TEXT,
+  retry_count INTEGER NOT NULL DEFAULT 0,
+  last_attempt_at TIMESTAMP NOT NULL DEFAULT NOW(),
+  status VARCHAR(20) NOT NULL DEFAULT &#39;failed&#39;, -- &#39;failed&#39;, &#39;retrying&#39;, &#39;resolved&#39;
+  created_at TIMESTAMP NOT NULL DEFAULT NOW()
+);
+</code></pre>
+<p><strong>Flow:</strong></p>
+<ol>
+<li>If a cron job fails after all retries → insert into failed_jobs</li>
+<li>Admin panel shows dead letter queue count in header + dedicated section</li>
+<li>Admin can &quot;Retry&quot; or &quot;Dismiss&quot; each failed job</li>
+<li>Retry attempt resets the job with original payload</li>
+</ol>
+<h2>11.7 Cron Job Overlap Prevention</h2>
+<p>All Inngest cron jobs must include overlap protection to prevent concurrent runs:</p>
+<ul>
+<li>Set <code>concurrency: 1</code> on each Inngest cron function</li>
+<li>Example:</li>
+</ul>
+<pre><code class="language-typescript">// jobs/send-reminders.ts
+import { inngest } from &#39;@/lib/inngest&#39;;
+
+export const checkAndSendReminders = inngest.createFunction(
+  { id: &#39;send-reminders&#39;, concurrency: 1 },
+  { cron: &#39;TZ=UTC 0 8 * * *&#39; },
+  async ({ step }) =&gt; {
+    // job logic
+  }
+);
+</code></pre>
+<ul>
+<li>If a job takes longer than its interval, the next scheduled run is skipped (not queued).</li>
+<li>Skipped runs are logged for admin awareness in the admin dashboard.</li>
+<li>This prevents email storms and database contention during high-volume periods.</li>
+</ul>
+<hr>
+<h1>12. PRIVACY &amp; COMPLIANCE</h1>
+<h2>12.1 GDPR Compliance</h2>
+<p>Since DeathFear handles EU user data (even if USD-only, EU users may sign up):</p>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>Implementation</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Data processing consent</td>
+<td>Checkbox on signup: &quot;I agree to the Terms and Privacy Policy&quot;</td>
+</tr>
+<tr>
+<td>Data collected disclosure</td>
+<td>Privacy Policy lists: name, email, invoice data, payment method type (not full details), email open/click data</td>
+</tr>
+<tr>
+<td>Right to deletion</td>
+<td>Settings → &quot;Delete my account&quot; → deletes user, clients, invoices, reminders, tone samples (anonymizes notification_logs)</td>
+</tr>
+<tr>
+<td>Data portability</td>
+<td>Settings → &quot;Download my data&quot; → exports all invoices, clients, settings as JSON</td>
+</tr>
+<tr>
+<td>Cookie consent</td>
+<td>Minimal cookie banner (only essential cookies for auth + optional analytics)</td>
+</tr>
+<tr>
+<td>Data retention</td>
+<td>Notification logs retained 12 months. Reminder delivery status retained 24 months. Active invoices retained until deleted.</td>
+</tr>
+<tr>
+<td>Email tracking consent</td>
+<td>Footer in every email: &quot;We track opens to notify your freelancer. Opens are not shared with third parties.&quot;</td>
+</tr>
+<tr>
+<td>DPA (Data Processing Agreement)</td>
+<td>Include link in settings/privacy page</td>
+</tr>
+</tbody></table>
+<h2>12.2 Data Retention Policy</h2>
+<table>
+<thead>
+<tr>
+<th>Data Type</th>
+<th>Retention Period</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Active user accounts</td>
+<td>Indefinite (until deleted)</td>
+<td></td>
+</tr>
+<tr>
+<td>Deleted user accounts</td>
+<td>30 days (soft delete)</td>
+<td>Full purge after 30 days</td>
+</tr>
+<tr>
+<td>Invoices (active)</td>
+<td>Indefinite</td>
+<td></td>
+</tr>
+<tr>
+<td>Invoices (deleted)</td>
+<td>90 days (soft delete)</td>
+<td>Full purge after 90 days</td>
+</tr>
+<tr>
+<td>Notification logs</td>
+<td>12 months</td>
+<td>Used for delivery analytics</td>
+</tr>
+<tr>
+<td>Reminder delivery status</td>
+<td>24 months</td>
+<td>For proof of delivery in legal disputes</td>
+</tr>
+<tr>
+<td>Email open/click data</td>
+<td>12 months</td>
+<td>Aggregate after 12 months</td>
+</tr>
+<tr>
+<td>Payment records</td>
+<td>7 years (tax compliance)</td>
+<td>Stored in Stripe/PayPal, DeathFear stores only subscription ID references</td>
+</tr>
+</tbody></table>
+<hr>
+<h1>13. SECURITY CONSIDERATIONS</h1>
+<table>
+<thead>
+<tr>
+<th>Concern</th>
+<th>Implementation</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Password storage</td>
+<td>bcrypt (12 rounds) via NextAuth.js</td>
+</tr>
+<tr>
+<td>Session management</td>
+<td>JWT stored in httpOnly cookies</td>
+</tr>
+<tr>
+<td>CSRF</td>
+<td>Next.js built-in CSRF protection</td>
+</tr>
+<tr>
+<td>XSS</td>
+<td>React&#39;s built-in sanitization, no dangerouslySetInnerHTML</td>
+</tr>
+<tr>
+<td>Rate limiting</td>
+<td>Upstash Ratelimit or Vercel KV for API routes (see section 7.4)</td>
+</tr>
+<tr>
+<td>SQL injection</td>
+<td>Prisma ORM prevents raw SQL injection</td>
+</tr>
+<tr>
+<td>API auth</td>
+<td>NextAuth.js middleware on all /api/* routes</td>
+</tr>
+<tr>
+<td>Payment data</td>
+<td>Stripe.js — never touch raw card numbers</td>
+</tr>
+<tr>
+<td>Email auth</td>
+<td>Resend API key in env variables</td>
+</tr>
+<tr>
+<td>Webhook verification</td>
+<td>Verify Stripe/PayPal/Razorpay signatures using their respective SDK verification methods (<code>stripe.webhooks.constructEvent()</code>, PayPal <code>verifyWebhookSignature()</code>, Razorpay webhook secret HMAC)</td>
+</tr>
+<tr>
+<td>Webhook idempotency</td>
+<td>All webhook handlers must store processed webhook IDs (from <code>stripe-event-id</code>, PayPal <code>transmission-id</code>, Razorpay <code>event_id</code>) and skip duplicates within 5 minutes to prevent double-billing on retries</td>
+</tr>
+<tr>
+<td>Share token security</td>
+<td>Crypto-random 64-char hex tokens, no API exposes tokens</td>
+</tr>
+<tr>
+<td>Data isolation</td>
+<td>All queries scoped to userId (row-level security via Prisma)</td>
+</tr>
+<tr>
+<td>Admin access</td>
+<td>Role check server-side in middleware AND route handlers</td>
+</tr>
+</tbody></table>
+<hr>
+<h1>14. ENVIRONMENT VARIABLES</h1>
+<pre><code class="language-bash"># Authentication
+AUTH_SECRET=
+AUTH_URL=
+AUTH_GOOGLE_ID=
+AUTH_GOOGLE_SECRET=
+AUTH_GITHUB_ID=
+AUTH_GITHUB_SECRET=
+
+# Database
+DATABASE_URL=
+
+# Email (Resend)
+RESEND_API_KEY=
+RESEND_FROM_EMAIL=reminders@deathear.app
+
+# AI (OpenAI)
+OPENAI_API_KEY=
+
+# Stripe
+STRIPE_SECRET_KEY=
+STRIPE_PUBLISHABLE_KEY=
+STRIPE_WEBHOOK_SECRET=
+STRIPE_PREMIUM_MONTHLY_PRICE_ID=
+STRIPE_PREMIUM_ANNUAL_PRICE_ID=
+
+# PayPal
+PAYPAL_CLIENT_ID=
+PAYPAL_CLIENT_SECRET=
+PAYPAL_WEBHOOK_ID=
+
+# UPI (Razorpay)
+RAZORPAY_KEY_ID=
+RAZORPAY_KEY_SECRET=
+RAZORPAY_WEBHOOK_SECRET=
+
+# Admin seeding (first deploy only)
+ADMIN_EMAIL=
+ADMIN_PASSWORD=
+
+# Rate Limiting (Upstash Redis)
+UPSTASH_REDIS_REST_URL=
+UPSTASH_REDIS_REST_TOKEN=
+
+# App
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+NEXT_PUBLIC_APP_NAME=DeathFear
+</code></pre>
+<hr>
+<h1>15. FILE STRUCTURE</h1>
+<pre><code>deathear/
+├── .env.local
+├── .env.example
+├── next.config.ts
+├── tailwind.config.ts
+├── tsconfig.json
+├── package.json
+├── vitest.config.ts               # Test configuration
+├── playwright.config.ts            # E2E test configuration
+├── prisma/
+│   ├── schema.prisma
+│   └── seed.ts
+├── public/
+│   ├── logo.svg
+│   ├── favicon.ico
+│   └── og-image.png
+├── src/
+│   ├── app/
+│   │   ├── layout.tsx                    # Root layout (providers)
+│   │   ├── page.tsx                      # Landing page
+│   │   ├── not-found.tsx                 # Custom 404
+│   │   ├── globals.css                   # Global styles
+│   │   ├── invoice/
+│   │   │   └── [token]/page.tsx          # Client invoice portal (public)
+│   │   ├── auth/
+│   │   │   ├── signin/page.tsx
+│   │   │   ├── signup/page.tsx
+│   │   │   ├── error/page.tsx
+│   │   │   └── verify-request/page.tsx
+│   │   ├── onboarding/page.tsx
+│   │   ├── app/
+│   │   │   ├── error.tsx                 # Dashboard-wide error boundary
+│   │   │   ├── (dashboard)/
+│   │   │   │   ├── layout.tsx            # App shell (sidebar + topbar)
+│   │   │   │   ├── error.tsx             # Dashboard-wide error boundary
+│   │   │   │   ├── dashboard/page.tsx
+│   │   │   │   ├── invoices/
+│   │   │   │   │   ├── error.tsx         # Invoices section error boundary
+│   │   │   │   │   ├── page.tsx          # Invoice list
+│   │   │   │   │   ├── new/page.tsx      # Create invoice
+│   │   │   │   │   └── [id]/
+│   │   │   │   │       ├── page.tsx      # Invoice detail
+│   │   │   │   │       ├── edit/page.tsx # Edit invoice
+│   │   │   │   │       └── legal/page.tsx# Legal escalation
+│   │   │   │   ├── clients/
+│   │   │   │   │   ├── error.tsx         # Clients section error boundary
+│   │   │   │   │   ├── page.tsx
+│   │   │   │   │   └── [id]/page.tsx
+│   │   │   │   ├── reminders/page.tsx    # Reminder sequences overview
+│   │   │   │   ├── settings/
+│   │   │   │   │   ├── page.tsx
+│   │   │   │   │   └── billing/page.tsx
+│   │   │   │   └── subscribe/page.tsx
+│   │   │   └── layout.tsx               # Auth guard wrapper
+│   │   ├── admin/
+│   │   │   ├── error.tsx                # Admin section error boundary
+│   │   │   ├── layout.tsx               # Admin layout + role check
+│   │   │   ├── page.tsx                 # Admin dashboard
+│   │   │   ├── users/page.tsx
+│   │   │   ├── subscriptions/page.tsx
+│   │   │   ├── plans/page.tsx
+│   │   │   ├── email-logs/page.tsx
+│   │   │   └── failed-jobs/page.tsx
+│   │   └── api/
+│   │       ├── auth/[...nextauth]/route.ts
+│   │       ├── webhooks/
+│   │       │   ├── stripe/route.ts
+│   │       │   ├── paypal/route.ts
+│   │       │   ├── razorpay/route.ts
+│   │       │   └── resend/route.ts
+│   │       ├── share/[token]/route.ts    # Client portal API
+│   │       ├── invoices/
+│   │       │   ├── route.ts
+│   │       │   └── [id]/
+│   │       │       ├── route.ts
+│   │       │       ├── send/route.ts
+│   │       │       ├── mark-paid/route.ts
+│   │       │       ├── send-reminder/route.ts
+│   │       │       └── pdf/route.ts
+│   │       ├── clients/
+│   │       │   ├── route.ts
+│   │       │   └── [id]/route.ts
+│   │       ├── reminders/
+│   │       │   ├── generate-ai/route.ts
+│   │       │   └── [id]/
+│   │       │       ├── route.ts
+│   │       │       ├── pause/route.ts
+│   │       │       └── resume/route.ts
+│   │       ├── legal/
+│   │       │   ├── generate-letter/route.ts
+│   │       │   ├── generate-guide/route.ts
+│   │       │   └── [invoiceId]/route.ts
+│   │       ├── subscriptions/
+│   │       │   ├── plans/route.ts
+│   │       │   ├── create/route.ts
+│   │       │   ├── current/route.ts
+│   │       │   ├── cancel/route.ts
+│   │       │   └── update/route.ts
+│   │       ├── settings/
+│   │       │   ├── route.ts
+│   │       │   └── tone-sample/
+│   │       │       ├── route.ts
+│   │       │       └── [id]/route.ts
+│   │       └── admin/
+│   │           ├── stats/route.ts
+│   │           ├── users/
+│   │           │   ├── route.ts
+│   │           │   └── [id]/route.ts
+│   │           ├── plans/route.ts
+│   │           ├── email-logs/route.ts
+│   │           └── failed-jobs/
+│   │               ├── route.ts
+│   │               └── [id]/retry/route.ts
+│   ├── components/
+│   │   ├── ui/                          # shadcn/ui components
+│   │   ├── landing/                     # Landing page components
+│   │   │   ├── hero.tsx
+│   │   │   ├── problem.tsx
+│   │   │   ├── how-it-works.tsx
+│   │   │   ├── features.tsx
+│   │   │   ├── pricing.tsx
+│   │   │   ├── cta.tsx
+│   │   │   └── footer.tsx
+│   │   ├── dashboard/
+│   │   │   ├── stats-cards.tsx
+│   │   │   ├── recent-invoices.tsx
+│   │   │   ├── payment-chart.tsx
+│   │   │   ├── upcoming-reminders.tsx
+│   │   │   └── quick-actions.tsx
+│   │   ├── invoices/
+│   │   │   ├── invoice-form.tsx
+│   │   │   ├── invoice-table.tsx
+│   │   │   ├── invoice-preview.tsx
+│   │   │   ├── invoice-status-badge.tsx
+│   │   │   ├── reminder-timeline.tsx
+│   │   │   ├── line-items-editor.tsx
+│   │   │   └── partial-payment-modal.tsx
+│   │   ├── clients/
+│   │   │   ├── client-form.tsx
+│   │   │   ├── client-table.tsx
+│   │   │   └── client-detail.tsx
+│   │   ├── reminders/
+│   │   │   ├── reminder-sequence.tsx
+│   │   │   ├── reminder-editor.tsx
+│   │   │   └── ai-tone-preview.tsx
+│   │   ├── subscription/
+│   │   │   ├── plan-card.tsx
+│   │   │   ├── payment-method-selector.tsx
+│   │   │   ├── upi-input.tsx
+│   │   │   └── plan-limit-modal.tsx
+│   │   ├── client-portal/
+│   │   │   ├── invoice-view.tsx
+│   │   │   └── client-payment-button.tsx
+│   │   ├── admin/
+│   │   │   ├── user-table.tsx
+│   │   │   ├── stats-overview.tsx
+│   │   │   └── failed-jobs-list.tsx
+│   │   └── shared/
+│   │       ├── app-shell.tsx
+│   │       ├── sidebar.tsx
+│   │       ├── topbar.tsx
+│   │       ├── empty-state.tsx
+│   │       ├── loading-skeleton.tsx
+│   │       └── pagination.tsx
+│   ├── lib/
+│   │   ├── auth.ts                      # NextAuth.js configuration
+│   │   ├── db.ts                        # Prisma client singleton
+│   │   ├── email.ts                     # Resend email functions
+│   │   ├── stripe.ts                    # Stripe client
+│   │   ├── paypal.ts                    # PayPal client
+│   │   ├── razorpay.ts                  # Razorpay/UPI client
+│   │   ├── openai.ts                    # OpenAI client
+│   │   ├── invoice.ts                   # Invoice generation utils
+│   │   ├── reminder.ts                  # Reminder scheduling logic
+│   │   ├── pdf.ts                       # PDF generation
+│   │   ├── rate-limit.ts                # Rate limiting middleware
+│   │   ├── share-token.ts               # Token generation + verification
+│   │   └── utils.ts                     # Shared utilities
+│   ├── schemas/
+│   │   ├── invoice.ts                   # Zod schemas for invoices
+│   │   ├── client.ts                    # Zod schemas for clients
+│   │   ├── settings.ts                  # Zod schemas for settings
+│   │   └── subscription.ts              # Zod schemas for subscriptions
+│   ├── types/
+│   │   ├── invoice.ts
+│   │   ├── client.ts
+│   │   ├── subscription.ts
+│   │   ├── reminder.ts
+│   │   └── api.ts
+│   ├── jobs/
+│   │   ├── send-reminders.ts
+│   │   ├── update-overdue.ts
+│   │   ├── manage-subscriptions.ts
+│   │   └── resume-paused-reminders.ts
+│   └── middleware.ts                    # Auth middleware
+├── emails/                              # React Email templates
+│   ├── invoice-sent.tsx
+│   ├── reminder-email.tsx
+│   ├── payment-confirmation.tsx
+│   ├── invoice-viewed.tsx
+│   ├── email-bounced.tsx
+│   └── subscription/
+│       ├── welcome.tsx
+│       ├── renewal.tsx
+│       ├── trial-ending.tsx
+│       ├── canceled.tsx
+│       └── payment-failed.tsx
+├── tests/
+│   ├── unit/
+│   │   ├── invoice.test.ts
+│   │   ├── reminder.test.ts
+│   │   └── utils.test.ts
+│   ├── integration/
+│   │   ├── api-invoices.test.ts
+│   │   ├── api-clients.test.ts
+│   │   └── auth.test.ts
+│   └── e2e/
+│       ├── auth-flow.spec.ts
+│       ├── invoice-flow.spec.ts
+│       └── reminder-flow.spec.ts
+└── scripts/
+    ├── seed.ts
+    └── dev.sh
+</code></pre>
+<hr>
+<h1>16. PACKAGES TO INSTALL</h1>
+<pre><code class="language-json">{
+  &quot;dependencies&quot;: {
+    &quot;next&quot;: &quot;^14.2.0&quot;,
+    &quot;react&quot;: &quot;^18.3.0&quot;,
+    &quot;react-dom&quot;: &quot;^18.3.0&quot;,
+    &quot;next-auth&quot;: &quot;5.0.0-beta.25&quot;,
+    &quot;@auth/prisma-adapter&quot;: &quot;^2.7.0&quot;,
+    &quot;@prisma/client&quot;: &quot;^5.x&quot;,
+    &quot;resend&quot;: &quot;^4.0.0&quot;,
+    &quot;stripe&quot;: &quot;^16.0.0&quot;,
+    &quot;@stripe/stripe-js&quot;: &quot;^4.0.0&quot;,
+    &quot;@paypal/paypal-js&quot;: &quot;^8.0.0&quot;,
+    &quot;razorpay&quot;: &quot;^2.9.0&quot;,
+    &quot;openai&quot;: &quot;^4.0.0&quot;,
+    &quot;zod&quot;: &quot;^3.23.0&quot;,
+    &quot;react-hook-form&quot;: &quot;^7.52.0&quot;,
+    &quot;@hookform/resolvers&quot;: &quot;^3.9.0&quot;,
+    &quot;tailwindcss&quot;: &quot;^3.4.0&quot;,
+    &quot;tailwindcss-animate&quot;: &quot;^1.0.7&quot;,
+    &quot;class-variance-authority&quot;: &quot;^0.7.0&quot;,
+    &quot;clsx&quot;: &quot;^2.1.0&quot;,
+    &quot;lucide-react&quot;: &quot;^0.400.0&quot;,
+    &quot;date-fns&quot;: &quot;^3.6.0&quot;,
+    &quot;@tanstack/react-query&quot;: &quot;^5.50.0&quot;,
+    &quot;recharts&quot;: &quot;^2.12.0&quot;,
+    &quot;framer-motion&quot;: &quot;^11.3.0&quot;,
+    &quot;next-themes&quot;: &quot;^0.3.0&quot;,
+    &quot;sonner&quot;: &quot;^1.5.0&quot;,
+    &quot;@react-pdf/renderer&quot;: &quot;^4.0.0&quot;,
+    &quot;react-email&quot;: &quot;^3.0.0&quot;,
+    &quot;inngest&quot;: &quot;^3.19.0&quot;,
+    &quot;@upstash/ratelimit&quot;: &quot;^2.0.0&quot;,
+    &quot;@upstash/redis&quot;: &quot;^1.34.0&quot;,
+    &quot;bcryptjs&quot;: &quot;^2.4.3&quot;,
+    &quot;uuid&quot;: &quot;^10.0.0&quot;
+  },
+  &quot;devDependencies&quot;: {
+    &quot;@types/node&quot;: &quot;^20.x&quot;,
+    &quot;@types/react&quot;: &quot;^18.3.0&quot;,
+    &quot;@types/react-dom&quot;: &quot;^18.3.0&quot;,
+    &quot;typescript&quot;: &quot;^5.5.0&quot;,
+    &quot;prisma&quot;: &quot;^5.x&quot;,
+    &quot;eslint&quot;: &quot;^8.0.0&quot;,
+    &quot;eslint-config-next&quot;: &quot;^14.2.0&quot;,
+    &quot;postcss&quot;: &quot;^8.4.0&quot;,
+    &quot;autoprefixer&quot;: &quot;^10.4.0&quot;,
+    &quot;@types/bcryptjs&quot;: &quot;^2.4.0&quot;,
+    &quot;@types/uuid&quot;: &quot;^10.0.0&quot;,
+    &quot;vitest&quot;: &quot;^2.0.0&quot;,
+    &quot;@playwright/test&quot;: &quot;^1.45.0&quot;,
+    &quot;axe-playwright&quot;: &quot;^2.0.0&quot;
+  }
+}
+</code></pre>
+<hr>
+<h1>17. TESTING STRATEGY</h1>
+<h2>17.1 Test Framework</h2>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Tool</th>
+<th>Location</th>
+<th>Coverage Target</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Unit tests</td>
+<td>Vitest</td>
+<td><code>tests/unit/</code></td>
+<td>80%+ for lib/ functions</td>
+</tr>
+<tr>
+<td>Integration tests</td>
+<td>Vitest + Supertest</td>
+<td><code>tests/integration/</code></td>
+<td>All API routes</td>
+</tr>
+<tr>
+<td>E2E tests</td>
+<td>Playwright</td>
+<td><code>tests/e2e/</code></td>
+<td>All critical user flows</td>
+</tr>
+<tr>
+<td>Accessibility</td>
+<td>axe-playwright</td>
+<td><code>tests/e2e/</code></td>
+<td>All pages WCAG AA pass</td>
+</tr>
+</tbody></table>
+<h2>17.2 Unit Tests</h2>
+<p><strong>What to test:</strong></p>
+<ul>
+<li><code>lib/invoice.ts</code> — invoice total calculation, tax/discount logic, line item validation</li>
+<li><code>lib/reminder.ts</code> — next reminder date calculation, tone selection, sequence construction</li>
+<li><code>lib/share-token.ts</code> — token generation, expiry checks</li>
+<li><code>lib/rate-limit.ts</code> — rate limit window calculation</li>
+<li>All Zod schemas — valid/invalid inputs</li>
+</ul>
+<h2>17.3 Integration Tests</h2>
+<p><strong>What to test:</strong></p>
+<ul>
+<li>All API route handlers (happy path + error cases)</li>
+<li>Auth middleware (authenticated, unauthenticated, wrong role)</li>
+<li>Database queries via Prisma (CRUD operations)</li>
+<li>Webhook signature verification</li>
+</ul>
+<h2>17.4 E2E Tests (Playwright)</h2>
+<p><strong>Critical Flows:</strong></p>
+<ol>
+<li><strong>Auth flow:</strong> Sign up → verify email → log in → log out</li>
+<li><strong>Onboarding:</strong> New user → set up tone sample → create first client</li>
+<li><strong>Invoice flow:</strong> Create invoice → send → view → mark paid</li>
+<li><strong>Reminder flow:</strong> Create overdue invoice → verify reminder scheduled → send reminder manually</li>
+<li><strong>Client portal:</strong> Share invoice link → client views → verify &quot;viewed&quot; status</li>
+<li><strong>Subscription flow:</strong> Free user → hit limit → upgrade to Premium → verify features unlocked</li>
+</ol>
+<h2>17.5 CI Pipeline (GitHub Actions)</h2>
+<pre><code class="language-yaml"># .github/workflows/ci.yml
+name: CI
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: npm ci
+      - run: npx prisma generate
+      - run: npm run test:unit
+      - run: npm run test:integration
+      - run: npm run lint
+      - run: npm run type-check
+</code></pre>
+<hr>
+<h1>18. IMPLEMENTATION ORDER (Build Sequence)</h1>
+<p>This is the recommended order for AI agents to build DeathFear. Each phase is self-contained and builds on the previous.</p>
+<h2>Phase 1: Foundation (Day 1–2)</h2>
+<ol>
+<li>Initialize Next.js project with TypeScript + Tailwind</li>
+<li>Set up Prisma + PostgreSQL schema + migrations</li>
+<li>Configure NextAuth.js with credentials + Google + GitHub</li>
+<li>Create auth pages (signin, signup)</li>
+<li>Set up middleware for route protection + admin role check</li>
+<li>Set up Vitest + basic test structure</li>
+<li>Deploy base to Vercel (empty app shell)</li>
+</ol>
+<h2>Phase 2: App Shell &amp; Landing (Day 2–3)</h2>
+<ol start="8">
+<li>Build landing page (hero, problem, how it works, features, pricing)</li>
+<li>Build app shell layout (sidebar, topbar, responsive)</li>
+<li>Create shared components (empty state, skeletons, error states)</li>
+<li>Set up TanStack Query provider</li>
+</ol>
+<h2>Phase 3: Clients &amp; Invoices (Day 3–5)</h2>
+<ol start="12">
+<li>Build client management (CRUD, list, detail)</li>
+<li>Build invoice creation form (with line items, validation)</li>
+<li>Build invoice list (search, filter, sort, pagination)</li>
+<li>Build invoice detail view (preview, timeline)</li>
+<li>Implement invoice PDF generation</li>
+<li>Implement &quot;Send Invoice&quot; action</li>
+<li>Build client invoice portal (tokenized <code>/invoice/[token]</code> page)</li>
+<li>Implement partial payment modal + logic</li>
+</ol>
+<h2>Phase 4: Dashboard &amp; Analytics (Day 5–6)</h2>
+<ol start="20">
+<li>Build dashboard with stats cards</li>
+<li>Add recent invoices table</li>
+<li>Add payment chart (recharts)</li>
+<li>Add upcoming reminders widget</li>
+</ol>
+<h2>Phase 5: Reminder Engine (Day 6–8)</h2>
+<ol start="24">
+<li>Build default reminder templates for all 4 tones</li>
+<li>Build AI tone adaptation (OpenAI integration)</li>
+<li>Build reminder sequence UI (timeline, edit, send now, pause/resume)</li>
+<li>Implement Inngest cron job for automated reminder sending</li>
+<li>Implement Resend email integration with reply-to</li>
+<li>Build email tracking (open rates, bounces)</li>
+<li>Implement email bounce handling + freelancer notification</li>
+<li>Build failed jobs system + admin dead letter queue</li>
+</ol>
+<h2>Phase 6: Legal Escalation (Day 8–9)</h2>
+<ol start="32">
+<li>Build formal demand letter generation</li>
+<li>Build small claims filing guide (USA 50 states + UK + Canada + Australia)</li>
+<li>Add legal disclaimer to all generated documents</li>
+<li>Build legal escalation UI</li>
+</ol>
+<h2>Phase 7: Subscriptions &amp; Billing (Day 9–12)</h2>
+<ol start="36">
+<li>Create subscription plans in DB (seed script)</li>
+<li>Build Stripe subscription integration (checkout, webhooks)</li>
+<li>Build PayPal subscription integration</li>
+<li>Build Razorpay UPI AutoPay (eMandate) integration</li>
+<li>Build subscription UI (pricing page, manage subscription)</li>
+<li>Build subscription gating (free vs premium checks)</li>
+<li>Build free plan limit enforcement (invoice cap, client cap, paywall modals)</li>
+</ol>
+<h2>Phase 8: Settings &amp; Polish (Day 12–13)</h2>
+<ol start="43">
+<li>Build settings pages (profile, tone samples, defaults, notifications, billing)</li>
+<li>Add theme toggle (light/dark)</li>
+<li>Add loading states and animations</li>
+<li>Add toast notifications for all actions</li>
+</ol>
+<h2>Phase 9: Admin Panel (Day 13–14)</h2>
+<ol start="47">
+<li>Build admin dashboard with stats</li>
+<li>Build user management (CRUD, role change, suspend)</li>
+<li>Build subscription management</li>
+<li>Build email log viewer</li>
+<li>Build plan CRUD interface</li>
+<li>Build failed jobs viewer + retry/dismiss</li>
+</ol>
+<h2>Phase 10: GDPR, Accessibility &amp; Compliance (Day 14–15)</h2>
+<ol start="53">
+<li>Add cookie consent banner</li>
+<li>Add Privacy Policy + Terms of Service pages</li>
+<li>Add data deletion + data export functionality in settings</li>
+<li>Run axe DevTools on all pages and fix accessibility issues</li>
+<li>Add skip-to-content link and aria labels</li>
+<li>Add data retention notice in footer of transactional emails</li>
+</ol>
+<h2>Phase 11: Testing &amp; CI (Day 15–16)</h2>
+<ol start="59">
+<li>Write unit tests for core lib functions (80%+ coverage)</li>
+<li>Write integration tests for all API routes</li>
+<li>Write Playwright E2E tests for critical user flows</li>
+<li>Set up GitHub Actions CI pipeline</li>
+<li>Set up Vercel preview deployments</li>
+</ol>
+<h2>Phase 12: Production Deployment (Day 16–17)</h2>
+<ol start="64">
+<li>Production environment configuration</li>
+<li>Stripe/PayPal/Razorpay webhook testing (local with Stripe CLI)</li>
+<li>Email template testing (Resend preview)</li>
+<li>Vercel production deploy</li>
+<li>Domain + SSL configuration</li>
+<li>Monitoring setup (Vercel Analytics + Sentry)</li>
+<li>Final QA pass + security review</li>
+</ol>
+<hr>
+<h1>19. KEY DESIGN DECISIONS</h1>
+<table>
+<thead>
+<tr>
+<th>Decision</th>
+<th>Choice</th>
+<th>Rationale</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>State management</td>
+<td>TanStack Query</td>
+<td>Server-state focused, caching, background refetching</td>
+</tr>
+<tr>
+<td>Form handling</td>
+<td>React Hook Form + Zod</td>
+<td>Performant, type-safe validation</td>
+</tr>
+<tr>
+<td>Styling</td>
+<td>Tailwind CSS</td>
+<td>Utility-first, fast development, consistent</td>
+</tr>
+<tr>
+<td>Component library</td>
+<td>shadcn/ui</td>
+<td>Copy-paste components, full customization</td>
+</tr>
+<tr>
+<td>Auth</td>
+<td>NextAuth.js v5</td>
+<td>Built for Next.js, multiple providers, Prisma adapter</td>
+</tr>
+<tr>
+<td>ORM</td>
+<td>Prisma</td>
+<td>Type-safe queries, migrations, great DX</td>
+</tr>
+<tr>
+<td>Email</td>
+<td>Resend</td>
+<td>Modern API, React Email support, good deliverability</td>
+</tr>
+<tr>
+<td>PDF</td>
+<td>@react-pdf/renderer</td>
+<td>React-based, server-side rendering</td>
+</tr>
+<tr>
+<td>Charts</td>
+<td>Recharts</td>
+<td>React-native, composable, responsive</td>
+</tr>
+<tr>
+<td>Cron</td>
+<td>Inngest</td>
+<td>Reliable, retries, observability, dead letter queue</td>
+</tr>
+<tr>
+<td>Payments</td>
+<td>Stripe + PayPal + Razorpay</td>
+<td>Maximum coverage for global users</td>
+</tr>
+<tr>
+<td>Rate limiting</td>
+<td>Upstash Ratelimit</td>
+<td>Serverless-native, fast, persists across instances</td>
+</tr>
+<tr>
+<td>Client portal tokens</td>
+<td>crypto.randomBytes(32)</td>
+<td>Cryptographically secure, no enumeration possible</td>
+</tr>
+<tr>
+<td>UPI subscriptions</td>
+<td>Razorpay eMandate (AutoPay)</td>
+<td>Only viable way to do recurring UPI payments</td>
+</tr>
+<tr>
+<td>Testing</td>
+<td>Vitest + Playwright</td>
+<td>Modern, fast, TypeScript-native</td>
+</tr>
+</tbody></table>
+<hr>
+<h1>20. ANALYTICS &amp; MONITORING</h1>
+<ul>
+<li><strong>Vercel Analytics</strong> — Page views, performance</li>
+<li><strong>Vercel Speed Insights</strong> — Core Web Vitals</li>
+<li><strong>Sentry</strong> — Error tracking (optional, Phase 2)</li>
+<li><strong>Custom Dashboard Events</strong>:<ul>
+<li>Invoice created / sent / paid / partially_paid</li>
+<li>Reminder sent / opened / bounced</li>
+<li>User signed up / subscribed / canceled / downgraded</li>
+<li>Legal escalation triggered</li>
+<li>Free plan limit hit</li>
+<li>Email bounced</li>
+<li>Cron job failure</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h1>21. SUCCESS METRICS</h1>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target (Month 1)</th>
+<th>Target (Month 3)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Registered users</td>
+<td>500</td>
+<td>2,000</td>
+</tr>
+<tr>
+<td>Active users (weekly)</td>
+<td>200</td>
+<td>800</td>
+</tr>
+<tr>
+<td>Invoices created</td>
+<td>1,000</td>
+<td>5,000</td>
+</tr>
+<tr>
+<td>Premium conversion rate</td>
+<td>8%</td>
+<td>15%</td>
+</tr>
+<tr>
+<td>Reminder open rate</td>
+<td>65%</td>
+<td>75%</td>
+</tr>
+<tr>
+<td>Payment recovery rate</td>
+<td>40%</td>
+<td>60%</td>
+</tr>
+<tr>
+<td>MRR</td>
+<td>$1,000</td>
+<td>$5,000</td>
+</tr>
+<tr>
+<td>Churn rate (monthly)</td>
+<td>&lt; 8%</td>
+<td>&lt; 5%</td>
+</tr>
+<tr>
+<td>Email bounce rate</td>
+<td>&lt; 3%</td>
+<td>&lt; 2%</td>
+</tr>
+</tbody></table>
+<hr>
+<h1>22. FUTURE ROADMAP (Post v1)</h1>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Timeline</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Mobile apps (React Native)</td>
+<td>Q2</td>
+</tr>
+<tr>
+<td>Zapier / Make integration</td>
+<td>Q2</td>
+</tr>
+<tr>
+<td>Team/agency accounts (multi-seat)</td>
+<td>Q2</td>
+</tr>
+<tr>
+<td>Automated tax reporting (1099, VAT)</td>
+<td>Q3</td>
+</tr>
+<tr>
+<td>Credit score impact reporting</td>
+<td>Q3</td>
+</tr>
+<tr>
+<td>Integration with QuickBooks / Xero</td>
+<td>Q3</td>
+</tr>
+<tr>
+<td>AI-powered payment negotiation</td>
+<td>Q4</td>
+</tr>
+<tr>
+<td>Marketplace of collections attorneys</td>
+<td>Q4</td>
+</tr>
+<tr>
+<td>Multi-currency support (EUR, GBP, INR)</td>
+<td>Q4</td>
+</tr>
+<tr>
+<td>Inbound email parsing (auto-detect client replies)</td>
+<td>Q4</td>
+</tr>
+</tbody></table>
+<hr>
+<p><em>End of PRD v1.1 — DeathFear Freelance Payment Recovery Platform</em>
+<em>This document is intended to be used by AI agents (Claude Code, GPT, DeepSeek, Gemini, etc.) to build the complete platform without requiring additional clarification.</em></p>
+
+</div>
+
+<script>
+// Generate Table of Contents from headings
+(function() {
+  const doc = document.querySelector('.document');
+  const headings = doc.querySelectorAll('h1, h2, h3');
+  const tocContainer = document.getElementById('toc-container');
+  
+  if (headings.length > 0) {
+    let tocHtml = '<div class="toc"><h2>Table of Contents</h2><ul class="toc-list">';
+    headings.forEach(h => {
+      const level = h.tagName.toLowerCase();
+      const text = h.textContent.replace(/^[d.]+ /, '').trim();
+      const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      h.id = id;
+      const indent = level === 'h2' ? '' : 'padding-left: 1rem;';
+      tocHtml += `<li style="${indent}font-size: ${level === 'h1' ? '1rem' : level === 'h2' ? '0.9rem' : '0.85rem'}; font-weight: ${level === 'h1' ? '700' : level === 'h2' ? '600' : '400'};"><a href="#${id}">${text}</a></li>`;
+    });
+    tocHtml += '</ul></div>';
+    tocContainer.innerHTML = tocHtml;
+  }
+})();
+</script>
+
+</body>
+</html>
