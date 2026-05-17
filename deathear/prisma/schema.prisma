@@ -1,0 +1,330 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Account {
+  id                String  @id @default(uuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @default("")
+  access_token      String? @default("")
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @default("")
+  session_state     String? @default("")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([sessionToken])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model User {
+  id              String    @id @default(uuid())
+  email           String    @unique
+  emailVerified   DateTime?
+  name            String?
+  image           String?
+  hashedPassword  String?
+  role            String    @default("user")
+  stripeCustomerId String?  @unique
+  paymentLink     String?
+  darkMode        String    @default("system")
+  deletedAt       DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  accounts          Account[]
+  sessions          Session[]
+  subscription      Subscription?
+  clients           Client[]
+  invoices          Invoice[]
+  toneSamples       ToneSample[]
+  notificationLogs  NotificationLog[]
+  inAppNotifications InAppNotification[]
+  legalEscalations  LegalEscalation[]
+
+  @@index([role])
+  @@index([email])
+}
+
+model SubscriptionPlan {
+  id                    String   @id @default(uuid())
+  name                  String
+  slug                  String   @unique
+  description           String?
+  priceMonthly          Float
+  priceAnnual           Float
+  stripePriceIdMonthly  String?
+  stripePriceIdAnnual   String?
+  paypalPlanIdMonthly   String?
+  paypalPlanIdAnnual    String?
+  razorpayPlanId        String?
+  invoicesPerMonth      Int
+  clientsAllowed        Int
+  aiToneEnabled         Boolean  @default(false)
+  legalEscalationEnabled Boolean @default(false)
+  prioritySupport       Boolean  @default(false)
+  features              String   @default("[]")
+  isActive              Boolean  @default(true)
+  sortOrder             Int      @default(0)
+  createdAt             DateTime @default(now())
+
+  subscriptions Subscription[]
+}
+
+model Subscription {
+  id                    String   @id @default(uuid())
+  userId                String   @unique
+  planId                String
+  status                String
+  billingInterval       String
+  paymentProvider       String
+  stripeSubscriptionId  String?  @unique
+  paypalSubscriptionId  String?  @unique
+  razorpaySubscriptionId String? @unique
+  currentPeriodStart    DateTime
+  currentPeriodEnd      DateTime
+  canceledAt            DateTime?
+  invoicesUsedThisMonth Int      @default(0)
+  lastInvoiceResetAt    DateTime @default(now())
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  user User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan SubscriptionPlan @relation(fields: [planId], references: [id])
+
+  @@index([userId])
+  @@index([stripeSubscriptionId])
+  @@index([paypalSubscriptionId])
+  @@index([razorpaySubscriptionId])
+  @@index([status])
+}
+
+model Client {
+  id              String    @id @default(uuid())
+  userId          String
+  name            String
+  email           String
+  company         String?
+  phone           String?
+  notes           String?
+  totalInvoiced   Float     @default(0)
+  totalPaid       Float     @default(0)
+  paymentStatus   String    @default("none")
+  lastInvoiceDate DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  invoices Invoice[]
+
+  @@unique([userId, email])
+  @@index([userId])
+  @@index([paymentStatus])
+  @@index([email])
+}
+
+model UserInvoiceCounter {
+  id      String @id @default(uuid())
+  userId  String @unique
+  year    Int
+  counter Int    @default(0)
+}
+
+model Invoice {
+  id                  String    @id @default(uuid())
+  userId              String
+  clientId            String
+  invoiceNumber       String
+  title               String
+  amount              Float
+  currency            String    @default("USD")
+  status              String    @default("draft")
+  dueDate             DateTime
+  sentDate            DateTime?
+  paidDate            DateTime?
+  paidAmount          Float     @default(0)
+  notes               String?
+  terms               String?
+  lineItems           String    @default("[]")
+  reminderSequence    String    @default("[]")
+  currentReminderStep Int       @default(0)
+  nextReminderDate    DateTime?
+  reminderEnabled     Boolean   @default(true)
+  reminderPaused      Boolean   @default(false)
+  deletedAt           DateTime?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  client          Client            @relation(fields: [clientId], references: [id])
+  invoiceShare    InvoiceShare?
+  reminders       Reminder[]
+  legalEscalation LegalEscalation?
+
+  @@unique([userId, invoiceNumber])
+  @@index([userId])
+  @@index([clientId])
+  @@index([status])
+  @@index([nextReminderDate])
+  @@index([dueDate])
+  @@index([createdAt])
+}
+
+model InvoiceShare {
+  id           String    @id @default(uuid())
+  invoiceId    String    @unique
+  token        String    @unique
+  expiresAt    DateTime?
+  lastViewedAt DateTime?
+  viewCount    Int       @default(0)
+  createdAt    DateTime  @default(now())
+
+  invoice Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([invoiceId])
+}
+
+model Reminder {
+  id              String    @id @default(uuid())
+  invoiceId       String
+  stepNumber      Int
+  tone            String
+  daysAfterDueDate Int
+  subject         String
+  message         String
+  wasAIGenerated  Boolean   @default(false)
+  wasEditedByUser Boolean   @default(false)
+  sentAt          DateTime?
+  openedAt        DateTime?
+  deliveryStatus  String    @default("pending")
+  errorMessage    String?
+  retryCount      Int       @default(0)
+  createdAt       DateTime  @default(now())
+
+  invoice Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@index([invoiceId])
+  @@index([sentAt])
+  @@index([deliveryStatus])
+}
+
+model ToneSample {
+  id           String   @id @default(uuid())
+  userId       String
+  originalText String
+  context      String?
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isActive])
+}
+
+model LegalEscalation {
+  id                       String   @id @default(uuid())
+  invoiceId                String   @unique
+  userId                   String
+  formalLetterGenerated    Boolean  @default(false)
+  formalLetterContent      String?
+  formalLetterSentAt       DateTime?
+  smallClaimsGuideGenerated Boolean @default(false)
+  smallClaimsGuideContent  String?
+  smallClaimsGuideState    String?
+  status                   String   @default("not_started")
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+
+  invoice Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([invoiceId])
+  @@index([status])
+}
+
+model NotificationLog {
+  id              String   @id @default(uuid())
+  userId          String
+  type            String
+  email           String
+  subject         String
+  body            String
+  metadata        String?
+  deliveryStatus  String   @default("sent")
+  resendId        String?
+  errorMessage    String?
+  createdAt       DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([type])
+  @@index([deliveryStatus])
+  @@index([createdAt])
+}
+
+model InAppNotification {
+  id        String   @id @default(uuid())
+  userId    String
+  type      String
+  title     String
+  body      String?
+  link      String?
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isRead])
+  @@index([createdAt])
+}
+
+model FailedJob {
+  id        String   @id @default(uuid())
+  name      String
+  payload   String?
+  error     String?
+  failedAt  DateTime @default(now())
+  retryCount Int     @default(0)
+
+  @@index([failedAt])
+  @@index([name])
+}
